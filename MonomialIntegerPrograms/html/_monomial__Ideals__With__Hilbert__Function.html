@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>  <!-- for emacs: -*- coding: utf-8 -*- -->
+<!-- Apache may like this line in the file .htaccess: AddCharset utf-8 .html -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN"	 "http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg.dtd" >
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head><title>monomialIdealsWithHilbertFunction -- find all monomial ideals in a polynomial ring with a particular (partial or complete) Hilbert function</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<link rel="stylesheet" type="text/css" href="/usr/local/share/Macaulay2/Style/doc.css"/>
+</head>
+<body>
+<table class="buttons">
+  <tr>
+    <td><div><a href="___Scip__Print__Level.html">next</a> | <a href="___Known__Dim.html">previous</a> | <a href="___Scip__Print__Level.html">forward</a> | <a href="___Known__Dim.html">backward</a> | up | <a href="index.html">top</a> | <a href="master.html">index</a> | <a href="toc.html">toc</a> | <a href="http://www.math.uiuc.edu/Macaulay2/">Macaulay2 web site</a></div>
+
+    </td>
+  </tr>
+</table>
+<div><a href="index.html" title="A package for fast monomial ideal computations using constraint integer programming">MonomialIntegerPrograms</a> :: <a href="_monomial__Ideals__With__Hilbert__Function.html" title="find all monomial ideals in a polynomial ring with a particular (partial or complete) Hilbert function">monomialIdealsWithHilbertFunction</a></div>
+<hr/>
+<div><h1>monomialIdealsWithHilbertFunction -- find all monomial ideals in a polynomial ring with a particular (partial or complete) Hilbert function</h1>
+<div class="single"><h2>Synopsis</h2>
+<ul><li><dl class="element"><dt>Usage: </dt><dd><tt>monomialIdealsWithHilbertFunction(L, R)</tt></dd></dl>
+</li>
+<li><div class="single">Inputs:<ul><li><span><tt>L</tt>, <span>a <a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/___List.html">list</a></span>, <i>{h(0), h(1), ..., h(d)}</i>, the values of a valid Hilbert function of a graded ring for degrees <i>0...d</i>.</span></li>
+<li><span><tt>R</tt>, <span>a <a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/___Ring.html">ring</a></span>, a polynomial ring</span></li>
+</ul>
+</div>
+</li>
+<li><div class="single">Outputs:<ul><li><span><span>a <a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/___List.html">list</a></span>, all ideals <i>I</i> of <i>R</i> that satisfy <i>HF(R/I, i) = h(i)</i> for all <i>0&le;i&le;d</i></span></li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="single"><h2>Description</h2>
+<div><div><p>Macaulay&rsquo;s Theorem characterizes all integer sequences which may be the Hilbert function of a graded ring. The package <a href="/usr/local/share/doc/Macaulay2/LexIdeals/html/index.html" title="a package for working with lex ideals">LexIdeals</a> has several functions based on this theorem, including the function <a href="/usr/local/share/doc/Macaulay2/LexIdeals/html/_is__H__F.html" title="is a finite list a Hilbert function of a polynomial ring mod a homogeneous ideal">isHF</a> which takes an integer sequence and returns true if it is a valid (partial) Hilbert function, and false otherwise.</p>
+<p>When you call <tt>monomialIdealsWithHilbertFunction(L, R)</tt>, first the function <tt>isHF L</tt> is called to make sure that the problem is feasible.</p>
+</div>
+</div>
+</div>
+<div class="single"><h2>See also</h2>
+<ul><li><span><a href="/usr/local/share/doc/Macaulay2/LexIdeals/html/_hilbert__Funct.html" title="return the Hilbert function of a polynomial ring mod a homogeneous ideal as a list">hilbertFunct</a> -- return the Hilbert function of a polynomial ring mod a homogeneous ideal as a list</span></li>
+<li><span><a href="/usr/local/share/doc/Macaulay2/LexIdeals/html/_is__H__F.html" title="is a finite list a Hilbert function of a polynomial ring mod a homogeneous ideal">isHF</a> -- is a finite list a Hilbert function of a polynomial ring mod a homogeneous ideal</span></li>
+<li><span><a href="/usr/local/share/doc/Macaulay2/LexIdeals/html/index.html" title="a package for working with lex ideals">LexIdeals</a> -- a package for working with lex ideals</span></li>
+<li><span><a href="index.html" title="A package for fast monomial ideal computations using constraint integer programming">MonomialIntegerPrograms</a> -- A package for fast monomial ideal computations using constraint integer programming</span></li>
+<li><span><a href="___Scip__Print__Level.html" title="adjust how much solving information is displayed in MonomialIntegerPrograms">ScipPrintLevel</a> -- adjust how much solving information is displayed in MonomialIntegerPrograms</span></li>
+</ul>
+</div>
+<div class="waystouse"><h2>Ways to use <tt>monomialIdealsWithHilbertFunction</tt> :</h2>
+<ul><li>monomialIdealsWithHilbertFunction(List,Ring)</li>
+</ul>
+</div>
+</div>
+</body>
+</html>
+

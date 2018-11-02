@@ -1,0 +1,33 @@
+-- -*- M2-comint -*- hash: 1026426973
+--loading configuration for package "MonomialIntegerPrograms" from file /home/ls/.Macaulay2/init-MonomialIntegerPrograms.m2
+Current value of ScipPrintLevel is 1.
+
+i1 : R = QQ[x,y,z,w,v];
+
+i2 : I = monomialIdeal(y^12, x*y^3, z*w^3, z*v*y^10, z*x^10, v*z^10, w*v^10, y*v*x*z*w);
+
+o2 : MonomialIdeal of R
+
+i3 : ScipPrintLevel = 0;
+
+i4 : minimalPrimes(I)
+
+o4 = {monomialIdeal (y, z, w), monomialIdeal (y, z, v), monomialIdeal (x, y,
+     ------------------------------------------------------------------------
+     w, v)}
+
+o4 : List
+
+i5 : apply(oo, p -> dim p)
+
+o5 = {2, 2, 1}
+
+o5 : List
+
+i6 : topMinimalPrimesIP(I)
+
+o6 = {monomialIdeal (y, z, w), monomialIdeal (y, z, v)}
+
+o6 : List
+
+i7 : 
