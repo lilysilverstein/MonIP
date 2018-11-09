@@ -23,6 +23,7 @@ export {
     "dimensionIP",
     "monomialIdealsWithHilbertFunction",
     "topMinimalPrimesIP",
+    "BoundGenerators",
     "KnownDim"
     }
 exportMutable {
@@ -88,15 +89,17 @@ degreeIP (MonomialIdeal) := o -> I -> (
     readScipCount(solFile)
     )
 
-monomialIdealsWithHilbertFunction = method();
-monomialIdealsWithHilbertFunction (List, Ring) := (D, R) -> (
+monomialIdealsWithHilbertFunction = method(
+    Options => {BoundGenerators => -1}
+    );
+monomialIdealsWithHilbertFunction (List, Ring) := o -> (D, R) -> (
     if not isHF D then error(
 	"impossible values for a Hilbert function! Make sure your Hilbert function corresponds to the QUOTIENT RING of a homogeneous ideal"
 	);
     n := numgens R;
     Dlist := apply(#D, i -> binomial(n+i-1,i)-D#i);
     (dir, zimplFile, solFile, errorFile, detailsFile) := tempDirectoryAndFiles("hilbert");            
-    zimplFile << hilbertIPFormulation(Dlist, n) << close;
+    zimplFile << hilbertIPFormulation(Dlist, n, o) << close;
     run(concatenate("(",ScipPath, 
 	    " -c 'set emphasis counter'",
 	    " -c 'set constraints countsols collect TRUE'",     
@@ -164,27 +167,47 @@ dimensionIPFormulation (MonomialIdeal) := (I) -> (
     dimensionIPFormulation(monIdealToSupportSets I, #gens ring I)
     )
 
-hilbertIPFormulation = method();
-hilbertIPFormulation (List, ZZ) := (D, n) -> (
+hilbertIPFormulation = method(
+    Options => {BoundGenerators => -1}
+    );
+hilbertIPFormulation (List, ZZ) := o -> (D, n) -> (
+    db := if o.BoundGenerators > 0 then o.BoundGenerators else #D-1;
     varsCommas := demark(",", toList vars(0..n-1));
     varsPluses := demark("+", toList vars(0..n-1));
-    varsPlusOne := j -> (
-	demark(",", apply(n, k -> if k==j then toString(vars(k))|"+1" else toString(vars(k))))
-	);
-    concatenate({"param maxD := ",
-	    toString(#D-1),";\n",
+    altVarsCommas := demark(",", toList vars(n..2*n-1));    
+    altVarsPluses := demark("+", toList vars(n..2*n-1));
+    concatenate({
+	    "param maxD := ",toString(#D-1),";\n",
+	    "param maxGenD := ",toString(db),";\n",
 	    "set D := {0 .. maxD};\n",
-	    "set M := {<",varsCommas,"> in ", demark("*", n:"D"),
-            " with ", varsPluses," <= maxD};\n",
+	    "set M := {<",varsCommas,"> in ", demark("*", n:"D")," with ", varsPluses," <= maxD};\n",
+	    "set BELOW[<",varsCommas,"> in M] := {<",altVarsCommas,"> in M with ",
+	    demark(" and ", apply(n, i -> (toString vars(n+i))|"<="|(toString vars(i)))),
+	    " and (",altVarsPluses," == ",varsPluses,"-1)};\n",
+	    "set ABOVE[<",varsCommas,"> in M] := {<",altVarsCommas,"> in M with ",
+	    demark(" and ", apply(n, i -> (toString vars(n+i))|">="|(toString vars(i)))),
+	    " and (",altVarsPluses," == ",varsPluses,"+1)};\n",
+	    "set ALLABOVE[<",varsCommas,"> in M] := {<",altVarsCommas,"> in M with ",
+	    demark(" and ", apply(n, i -> (toString vars(n+i))|">="|(toString vars(i)))),
+	    " and (",altVarsPluses," >= ",varsPluses,"+1)};\n",
 	    "param p[<degree> in D] := ", demark(", ",apply(#D, i -> "<"|i|">"|D#i)),";\n",
 	    "var X[M] binary;\n",
+	    "var Y[M] binary;\n",
 	    "minimize obj: X[", demark(",", n:"0"), "];\n",
 	    "subto h: forall <degree> in D do\n",
 	    "    sum <", varsCommas, "> in M with ", varsPluses, " == degree: X[",
 	    varsCommas, "] == p[degree];\n",
-	    "subto ideal: forall <", varsCommas, "> in M with ", varsPluses, " <= maxD-1 do\n    ",
-	    demark(" + ", apply(n, j -> "X["|varsPlusOne(j)|"]")),
-	    " - ", toString(n), "*X[", varsCommas, "] >= 0;"
+	    "subto ideal: forall <",varsCommas,"> in M with ",
+	    varsPluses," <= maxD-1 do\n    sum <",altVarsCommas,"> in ABOVE[",varsCommas,
+	    "]: X[",altVarsCommas,"] - ",toString n,"*X[",varsCommas,"] >= 0;\n",
+	    "subto gensInIdeal: forall <",varsCommas,"> in M do\n X[",varsCommas,"] - Y[",varsCommas,"] >= 0;\n",
+	    "subto mingens: forall <",varsCommas,"> in M with ",varsPluses," <= maxD-1 do\n",
+    	    "    forall <",altVarsCommas,"> in ALLABOVE[",varsCommas,"] do\n",
+	    "        Y[",varsCommas,"] + Y[",altVarsCommas,"] <=1;\n",
+	    "subto markGens: forall <",varsCommas,"> in M with ",varsPluses," <= maxD do\n",
+	    "    sum <",altVarsCommas,"> in BELOW[",varsCommas,"]: X[",altVarsCommas,"] + Y[",varsCommas,"] - X[",varsCommas,"] >= 0;\n",
+	    "subto genDegreeBound: forall <",varsCommas,"> in M with ",varsPluses," >= maxGenD+1 do\n",
+	    "    Y[",varsCommas,"] == 0;"
 	    })
     )
 
@@ -206,13 +229,13 @@ readAllMonomialIdeals = method()
 readAllMonomialIdeals (String, Ring) := (solFile, R) -> (
     n := numgens R;
     L := lines get solFile;
-    mons := apply(select("X"|demark(".", n:"#")|".",L#0), a -> product(apply(n, i -> R_i^(value a_(2*i+2)))));
+    L = apply(L, l -> separate(",",l));
+    yIndices := positions(L#0, a -> select("Y",a)=!={});
+    exps := for y in yIndices list drop(separate("#",L#0#y),1);
+    mons := apply(exps, e -> product apply(n, i-> R_i^(value e_i)));
     L = drop(L, 1);
     allSolutions := apply(L, 
-	ln -> (
-	    l := drop(separate(",",ln), 1);
-	    I := monomialIdeal(apply(#l, i -> if value(l#i)==1 then mons#i else 0))
-	    )
+	ln -> monomialIdeal mons_(positions(ln_yIndices, i -> value i == 1))
 	)
     )
 
@@ -269,14 +292,19 @@ assert(dimensionIP(L, 6) == 3)
 
 TEST ///
 R=QQ[x,y,z];
-assert(#monomialIdealsWithHilbertFunction({1,2,1,0},R)==9)
-assert(#monomialIdealsWithHilbertFunction({1,3,4,2,1,0},R)==156)
-///
-
-TEST /// --hilbert function
+assert(
+    #monomialIdealsWithHilbertFunction({1,2,1,0},R)==9
+    )
+assert(
+    #monomialIdealsWithHilbertFunction({1,3,4,2,1,0},R)==156
+    )
 R=QQ[x,y,z,w];
-assert(#monomialIdealsWithHilbertFunction({1,4,3,1,0},R)==244)
-assert(all(monomialIdealsWithHilbertFunction({1,4,10,19,31},R), I -> numgens I == 1))
+assert(
+    #monomialIdealsWithHilbertFunction({1,4,3,1,0},R)==244
+    )
+assert(
+    all(monomialIdealsWithHilbertFunction({1,4,10,19,31},R), I -> numgens I == 1)
+    )
 ///
 
 TEST /// --top min primes
@@ -368,7 +396,7 @@ doc ///
   codimensionIP
   degreeIP
   dimensionIP
-  monomialsWithHilbertFunction
+  monomialIdealsWithHilbertFunction
   topMinimalPrimesIP
   symbol ScipPrintLevel
 ///
@@ -562,6 +590,7 @@ doc ///
  Key
   monomialIdealsWithHilbertFunction
   (monomialIdealsWithHilbertFunction, List, Ring)
+  [monomialIdealsWithHilbertFunction, BoundGenerators]
  Headline
   find all monomial ideals in a polynomial ring with a particular (partial or complete) Hilbert function
  Usage
@@ -583,7 +612,59 @@ doc ///
    When you call {\tt monomialIdealsWithHilbertFunction(L, R)}, first the function {\tt isHF L} is called to make sure
    that the problem is feasible. 
    
-   This documentation page still in progress.
+   Another useful function from the @TO LexIdeals@ package is @TO hilbertFunct@, which returns the first
+   few values of the Hilbert function of a homogeneous ideal as a list. The default degree limit
+   is 20, but this can be adjusted by the user.
+  Example
+   needsPackage("LexIdeals");
+   R = QQ[x,y,z];
+   I = monomialIdeal(x*y*z, x^2*y, y^2*z, x^3, y^3);
+   hilbertFunct I
+   L = hilbertFunct(I, MaxDegree => 5)
+  Text
+   As an example, let's find all monomial ideals of $R$, generated in degrees at
+   most 5, with the same  Hilbert function as $I$. Because there are many, we'll print the first
+   few only. The list of monomial ideals has no particular order.
+  Example
+   ScipPrintLevel = 0;
+   M = monomialIdealsWithHilbertFunction(L, R);
+   #M
+   netList take(M, 5)
+  Text
+   This function can generate interesting data, such as all possible Betti tables of ideals with
+   a given Hilbert function (and bounded generating degrees), along with their frequency.
+  Example
+   tally apply(M, m -> betti res m)   
+  Text
+   In the previous example, the list $L$ determines a unique Hilbert function, i.e.
+   the only Hilbert function beginning with $\{1,3,6,5,4,4\}$ is the one
+   which is constantly 4 after that point. However, uniqueness is not
+   necessary to use this function. For instance, let's truncate the same Hilbert function
+   at degree 4 and see what happens.
+  Example
+   L' = hilbertFunct(I, MaxDegree => 4)
+   M' = monomialIdealsWithHilbertFunction(L', R);
+   #M'
+   tally apply(M', m -> hilbertFunct(m, MaxDegree => 10))
+  Text
+   By using a partial Hilbert function, we get all possible completions of the
+   function that correspond to ideals generated in degrees at most 4, in our
+   ring, along with the number of monomial ideals corresponding
+   to each. We can see that the 306 ideals whose Hilbert function is
+   eventually constantly 4 appear in the list, but there are others too.
+   
+   By default, the degrees of the generators are bounded by the length of the list.
+   To set a different degree bound, use the {\tt BoundGenerators} option.
+   The next example shows that there are 156 monomial ideals in $k[x,y,z]$ 
+   with Hilbert function beginning $(1,3,4,2,1)$ generated in degree at most
+   4, but only 48 generated in degree at most 3.
+  Example
+   #monomialIdealsWithHilbertFunction({1,3,4,2,1}, R)
+   #monomialIdealsWithHilbertFunction({1,3,4,2,1}, R, BoundGenerators => 4)   
+   #monomialIdealsWithHilbertFunction({1,3,4,2,1}, R, BoundGenerators => 3)
+  Text
+   At this point it is not possible to specify an entire degree sequence for
+   the generators, but stay tuned.
  SeeAlso
   hilbertFunct
   isHF
@@ -642,15 +723,12 @@ doc ///
   symbol ScipPrintLevel
 ///
 
-viewHelp("MonomialIntegerPrograms")
-
 end--
 
-installPackage("MonomialIntegerPrograms")
+uninstallPackage("MonomialIntegerPrograms")
 restart
-needsPackage("MonomialIntegerPrograms", Configuration => {"CustomPath" => "SCIPOptSuite-6.0.0-Linux/bin/scip"})
+needsPackage("MonomialIntegerPrograms", Configuration => {"CustomPath" => "~/Dropbox/SAT/SCIPOptSuite-6.0.0-Linux/bin/scip"})
 
-viewHelp("MonomialIntegerPrograms")
 randomFixedDegreeMonomials = method();
 randomFixedDegreeMonomials (ZZ, ZZ, ZZ) := (n, D, M) -> (
     for m from 0 to M-1 list(
