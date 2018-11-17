@@ -24,6 +24,8 @@ export {
     "monomialIdealsWithHilbertFunction",
     "topMinimalPrimesIP",
     "BoundGenerators",
+    "FirstBetti",
+    "GradedBettis",
     "KnownDim"
     }
 exportMutable {
@@ -90,14 +92,22 @@ degreeIP (MonomialIdeal) := o -> I -> (
     )
 
 monomialIdealsWithHilbertFunction = method(
-    Options => {BoundGenerators => -1}
+    Options => {
+	BoundGenerators => -1,
+	FirstBetti => "",
+	GradedBettis => ""
+	}
     );
 monomialIdealsWithHilbertFunction (List, Ring) := o -> (D, R) -> (
     if not isHF D then error(
-	"impossible values for a Hilbert function! Make sure your Hilbert function corresponds to the QUOTIENT RING of a homogeneous ideal"
+	"impossible values for a Hilbert function! Make sure your Hilbert function corresponds to the QUOTIENT of a homogeneous ideal"
+	);
+    if o.FirstBetti =!= "" and o.GradedBettis =!= "" then error(
+	"cannot specify FirstBetti and GradedBettis options simultaneously"
 	);
     n := numgens R;
     Dlist := apply(#D, i -> binomial(n+i-1,i)-D#i);
+    if all(Dlist, d -> d==0) then return {monomialIdeal(0_R)};
     (dir, zimplFile, solFile, errorFile, detailsFile) := tempDirectoryAndFiles("hilbert");            
     zimplFile << hilbertIPFormulation(Dlist, n, o) << close;
     run(concatenate("(",ScipPath, 
@@ -168,7 +178,11 @@ dimensionIPFormulation (MonomialIdeal) := (I) -> (
     )
 
 hilbertIPFormulation = method(
-    Options => {BoundGenerators => -1}
+    Options => {
+	BoundGenerators => -1,
+	FirstBetti => "",
+	GradedBettis => ""
+	}
     );
 hilbertIPFormulation (List, ZZ) := o -> (D, n) -> (
     db := if o.BoundGenerators > 0 then o.BoundGenerators else #D-1;
@@ -176,6 +190,20 @@ hilbertIPFormulation (List, ZZ) := o -> (D, n) -> (
     varsPluses := demark("+", toList vars(0..n-1));
     altVarsCommas := demark(",", toList vars(n..2*n-1));    
     altVarsPluses := demark("+", toList vars(n..2*n-1));
+    bettiLines := "";
+    if o.GradedBettis =!= "" then (
+	G := o.GradedBettis; 
+	if #G-1 > db then error("degrees of generators cannot be higher than degree bound");
+	bettiLines = concatenate({
+	    "\nset E := {0 .. maxGenD};\n",
+	    "param Q[<degree> in E] := ", demark(", ",apply(#G, i -> "<"|i|">"|G#i)),";\n",
+	    "subto specifiedBettis: forall <degree> in E do\n",
+	    "    sum <", varsCommas, "> in M with ", varsPluses, " == degree: Y[",varsCommas,"] == Q[degree];\n"
+	    })
+    );
+    if o.FirstBetti =!= "" then (
+    	bettiLines = concatenate({"\nsubto totalBetti: sum <", varsCommas, "> in M: Y[",varsCommas,"] == ",toString o.FirstBetti, ";\n"})
+	);
     concatenate({
 	    "param maxD := ",toString(#D-1),";\n",
 	    "param maxGenD := ",toString(db),";\n",
@@ -190,16 +218,14 @@ hilbertIPFormulation (List, ZZ) := o -> (D, n) -> (
 	    "set ALLABOVE[<",varsCommas,"> in M] := {<",altVarsCommas,"> in M with ",
 	    demark(" and ", apply(n, i -> (toString vars(n+i))|">="|(toString vars(i)))),
 	    " and (",altVarsPluses," >= ",varsPluses,"+1)};\n",
-	    "param p[<degree> in D] := ", demark(", ",apply(#D, i -> "<"|i|">"|D#i)),";\n",
+	    "param P[<degree> in D] := ", demark(", ",apply(#D, i -> "<"|i|">"|D#i)),";\n",
 	    "var X[M] binary;\n",
 	    "var Y[M] binary;\n",
 	    "minimize obj: X[", demark(",", n:"0"), "];\n",
 	    "subto h: forall <degree> in D do\n",
-	    "    sum <", varsCommas, "> in M with ", varsPluses, " == degree: X[",
-	    varsCommas, "] == p[degree];\n",
-	    "subto ideal: forall <",varsCommas,"> in M with ",
-	    varsPluses," <= maxD-1 do\n    sum <",altVarsCommas,"> in ABOVE[",varsCommas,
-	    "]: X[",altVarsCommas,"] - ",toString n,"*X[",varsCommas,"] >= 0;\n",
+	    "    sum <", varsCommas, "> in M with ", varsPluses, " == degree: X[",varsCommas, "] == P[degree];\n",
+	    "subto ideal: forall <",varsCommas,"> in M with ",varsPluses," <= maxD-1 do\n",    
+	    "sum <",altVarsCommas,"> in ABOVE[",varsCommas,"]: X[",altVarsCommas,"] - ",toString n,"*X[",varsCommas,"] >= 0;\n",
 	    "subto gensInIdeal: forall <",varsCommas,"> in M do\n X[",varsCommas,"] - Y[",varsCommas,"] >= 0;\n",
 	    "subto mingens: forall <",varsCommas,"> in M with ",varsPluses," <= maxD-1 do\n",
     	    "    forall <",altVarsCommas,"> in ALLABOVE[",varsCommas,"] do\n",
@@ -207,7 +233,8 @@ hilbertIPFormulation (List, ZZ) := o -> (D, n) -> (
 	    "subto markGens: forall <",varsCommas,"> in M with ",varsPluses," <= maxD do\n",
 	    "    sum <",altVarsCommas,"> in BELOW[",varsCommas,"]: X[",altVarsCommas,"] + Y[",varsCommas,"] - X[",varsCommas,"] >= 0;\n",
 	    "subto genDegreeBound: forall <",varsCommas,"> in M with ",varsPluses," >= maxGenD+1 do\n",
-	    "    Y[",varsCommas,"] == 0;"
+	    "    Y[",varsCommas,"] == 0;",
+	    bettiLines
 	    })
     )
 
@@ -723,37 +750,72 @@ doc ///
   symbol ScipPrintLevel
 ///
 
+doc ///
+ Key
+  "sample session in Monomial Integer Programs"
+ Description
+  Example
+   R = QQ[x,y];
+   L = {1,2,3,4,4,3,2,1,1};
+   M = monomialIdealsWithHilbertFunction(L, R); 
+   #M
+   member(monomialIdeal(x^5*y, x^2*y^2, x*y^4, y^7), M)
+  Text
+   To look at all possible Betti tables for this Hilbert function:
+  Example
+   T = tally apply(M, m -> betti res m); 
+   netList({keys T, values T}, Alignment => Center, HorizontalSpace => 1)
+  Text
+   To specify the total number of minimal generators:
+  Example
+   monomialIdealsWithHilbertFunction(L, R, FirstBetti => 2)
+  Text
+   The symbol {\tt ScipPrintLevel} controls how much of the inner workings of
+   the package are visible to the user. At level 3, for instance, the IP passed
+   to SCIP is printed to the screen, as are any warnings or errors sent to stderr
+   by SCIP, before returning the answer.
+  Example
+   ScipPrintLevel = 3;
+   monomialIdealsWithHilbertFunction(L, R, FirstBetti => 2)
+   ScipPrintLevel = 0; --don't even display the temporary file directory
+  Text
+   To find the probability of having Hilbert function $L = \{1,2,3,4,4,3,2,1,1,...\}$:
+  Example
+   S = QQ[p];
+   probL = sum apply(M, m -> p^(numgens m)*(1-p)^(-1+sum L));
+   factor probL
+   substitute(probL, p => 0.2)
+  Text
+   To find the probability of Hilbert function $L$ and graded Betti numbers $\{0,0,0,0,1,1,1,1,0\}$:
+  Example
+   B = {0,0,0,0,1,1,1,1,0};
+   M' = monomialIdealsWithHilbertFunction(L, R, GradedBettis => B);
+   probLB = #M'*p^(sum B)*(1-p)^(-1+sum L);
+   factor probLB
+   substitute(probLB, p => 0.2)
+  Text
+   Here is a more complicated example.
+  Example
+   R = QQ[x,y,z];
+   needsPackage("RandomIdeals");
+   I = monomialIdeal randomMonomialIdeal({3,3,3,4,4,4,5,5,5,6,6,6},R)
+   H = apply(7, i -> hilbertFunction(i,I))
+   elapsedTiming(M = monomialIdealsWithHilbertFunction(H, R);)
+   #M
+   B = for j from 0 to 6 list number(apply(flatten entries mingens I, i -> first degree i), i -> i==j)
+   elapsedTiming(M' = monomialIdealsWithHilbertFunction(H, R, GradedBettis => B);)
+   #M'
+   tally(apply(M', m -> betti res m))
+ SeeAlso
+  MonomialIntegerPrograms
+///
+ 
+
 end--
 
-uninstallPackage("MonomialIntegerPrograms")
 restart
-needsPackage("MonomialIntegerPrograms", Configuration => {"CustomPath" => "~/Dropbox/SAT/SCIPOptSuite-6.0.0-Linux/bin/scip"})
+installPackage("MonomialIntegerPrograms")
+viewHelp("sample session in Monomial Integer Programs")
+needsPackage("MonomialIntegerPrograms")
 
-randomFixedDegreeMonomials = method();
-randomFixedDegreeMonomials (ZZ, ZZ, ZZ) := (n, D, M) -> (
-    for m from 0 to M-1 list(
-	mon := {};
-	while #mon < D do(
-	    x := random(n-1);
-	    if not member(x, mon) then mon = append(mon, x);
-	    );
-	sort mon
-	)
-    )
-scipPrintLevel = 0
 
-for n in 5*toList(10..40) do(
-    << "n = "<<n<<endl;
-    R = QQ[x_1..x_n];
-    I = monomialIdeal(apply(randomFixedDegreeMonomials(n, 20, 50), m -> product(apply(m, j -> R_j))));
-    << "M2 dim " <<elapsedTiming(dim I)<< endl;
-    << "IP dim " <<elapsedTiming(dimensionIP I)<< endl;
-    )
-
-for n in 5*toList(5..10) do(
-    << "n = "<<n<<endl;
-    R = QQ[x_1..x_n];
-    I = monomialIdeal(apply(randomFixedDegreeMonomials(n, 20, 50), m -> product(apply(m, j -> R_j))));
-    << "M2 deg " <<elapsedTiming(degree I) << endl;
-    << "IP deg " <<elapsedTiming(degreeIP I) << endl;
-    )
