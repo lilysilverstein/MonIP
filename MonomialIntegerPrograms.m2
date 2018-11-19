@@ -69,13 +69,16 @@ degreeIP = method(
     Options => {KnownDim => -1}
     );
 degreeIP (MonomialIdeal) := o -> I -> (
-    if not isSquareFree I then(
-	error("This method currently implemented for squarefree monomial ideals only!")
-	);
-    --waiting to see if polarize function is accepted into M2 core
     objValue := if o.KnownDim >= 0 then o.KnownDim else dimensionIP(I);
-    (dir, zimplFile, solFile, errorFile, detailsFile) := tempDirectoryAndFiles("deg");    
-    zimplFile << degreeIPFormulation(I, objValue) << close;
+    (dir, zimplFile, solFile, errorFile, detailsFile) := tempDirectoryAndFiles("deg");        
+    if not isSquareFree I then(
+	J := polarize(I);
+	newDim := numgens ring J - numgens ring I + objValue;
+    	zimplFile << degreeIPFormulation(J, newDim) << close;
+	)
+    else(
+    	zimplFile << degreeIPFormulation(I, objValue) << close;
+	);
     run(concatenate("(",ScipPath, 
 	    " -c 'set emphasis counter'",
 	    " -c 'set constraints countsols collect FALSE'",     	    
@@ -131,6 +134,7 @@ topMinimalPrimesIP = method(
     );
 topMinimalPrimesIP (MonomialIdeal) := o -> I -> (
     if I == monomialIdeal(1_(ring I)) then return I;
+    if not isSquareFree I then error("only implemented for squarefree monomial ideals at this time!");
     k := if o.KnownDim >= 0 then o.KnownDim else dimensionIP(I);
     (dir, zimplFile, solFile, errorFile, detailsFile) := tempDirectoryAndFiles("comps");        
     zimplFile << degreeIPFormulation(I, k) << close;
@@ -353,6 +357,7 @@ assert(
     set(topMinimalPrimesIP(L))===set(select(minimalPrimes(L), p -> 2 == dim p))    
     )
 ///
+
 -------------------
 -- documentation --
 -------------------
@@ -817,5 +822,3 @@ restart
 installPackage("MonomialIntegerPrograms")
 viewHelp("sample session in Monomial Integer Programs")
 needsPackage("MonomialIntegerPrograms")
-
-
