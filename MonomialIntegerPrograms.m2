@@ -805,10 +805,20 @@ assert(
     )
 ///
 
-TEST ///
-L = {{0,1,3}, {1,2}, {2,3}, {3,4}, {0,4}};
-assert(dimensionIP(L, 5) == 2)
-assert(dimensionIP(L, 6) == 3)
+TEST /// --degree 
+R = QQ[x_1..x_10];
+I = monomialIdeal(x_1*x_4*x_7^3,x_1^2*x_8^3,x_1*x_2*x_8^2*x_9,x_1*x_4^2*x_9^2,x_1*x_7^2*x_9^2);
+assert(
+    degreeIP(I) == degree I
+    )
+J = monomialIdeal(x_3^2*x_5*x_6*x_8,x_4^4*x_9,x_7^2*x_8^2*x_9,x_4*x_5*x_8*x_9^2,x_2^2*x_4*x_10^2);
+assert(
+    degreeIP(J) == degree J
+    )
+K = monomialIdeal(x_4^5,x_2*x_3*x_5^2*x_7,x_2*x_5*x_7^3,x_2*x_3^2*x_7*x_8,x_1^4*x_9,x_4*x_6*x_8*x_9^2,x_1*x_4^3*x_10,x_1^2*x_5*x_6*x_10,x_3^3*x_7*x_10,x_1^2*x_7*x_9*x_10,x_1*x_5*x_8*x_10^2,x_2*x_7*x_8*x_10^2,x_3^2*x_10^3,x_3*x_9*x_10^3);
+assert(
+    degreeIP K == degree K
+    )
 ///
 
 TEST /// --hilbert
