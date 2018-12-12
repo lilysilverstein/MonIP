@@ -46,13 +46,8 @@ print("Current value of ScipPrintLevel is 1.")
 
 codimensionIP = method();
 codimensionIP (MonomialIdeal) := I -> (
-    (numgens ring I) - dimensionIP(I)
-    )
-
-dimensionIP = method();
-dimensionIP (MonomialIdeal) := I -> (
     (dir, zimplFile, solFile, errorFile, detailsFile) := tempDirectoryAndFiles("dim");
-    zimplFile << dimensionIPFormulation(I) << close;
+    zimplFile << codimensionIPFormulation(I) << close;
     run(concatenate("(",ScipPath, 
 	    " -c 'read ", zimplFile,
 	    "' -c 'optimize'",
@@ -61,8 +56,14 @@ dimensionIP (MonomialIdeal) := I -> (
 	    solFile,
 	    " 2>",
 	    errorFile));
-    printStatement({zimplFile, solFile, errorFile, "Dimension", dir});
+    printStatement({zimplFile, solFile, errorFile, "Codim", dir});
     readScipSolution(solFile)
+    )
+
+dimensionIP = method();
+dimensionIP (MonomialIdeal) := I -> (
+    n := numgens ring I;
+    n - codimensionIP(I)
     )
 
 degreeIP = method( 
@@ -165,6 +166,20 @@ degreeIPFormulation (List, ZZ, ZZ) := (A, n, knownDim) -> (
     )
 degreeIPFormulation (MonomialIdeal, ZZ) := (I, knownDim) -> (
     degreeIPFormulation(monIdealToSupportSets(I), #gens ring I, knownDim)
+    )
+
+codimensionIPFormulation = method();
+codimensionIPFormulation (List, ZZ) := (A, n) -> (
+    concatenate({"set N := {0 .. ",toString(n-1),"};\n",
+        "var X[N] binary;\n","minimize obj: sum <i> in N: X[i];\n",
+        demark("\n", for i from 0 to #A-1 list(
+	concatenate({"subto constraint",toString(i),": ",
+	demark("+",apply(A#i, e -> "X["|toString(e)|"]")),
+	" >= ",toString(1)|";"})))
+    })
+)
+codimensionIPFormulation (MonomialIdeal) := (I) -> (
+    codimensionIPFormulation(monIdealToSupportSets I, #gens ring I)
     )
 
 dimensionIPFormulation = method();
@@ -303,60 +318,6 @@ tempDirectoryAndFiles (String) := (bname) -> (
     makeDirectory(dir);
     (dir, dir|"/"|bname|".zpl", dir|"/"|bname|".sol", dir|"/"|bname|".errors", dir|"/"|bname|".details")
 )
-
------------
--- tests --
------------
-
-TEST ///
-R = QQ[x,y,z,w,v];
-I = monomialIdeal(x*y*w, x*z*v, y*x, y*z*v);
-assert(dimensionIP(I) == 3)
-assert(degreeIP(I) == 5)
-///
-
-TEST ///
-L = {{0,1,3}, {1,2}, {2,3}, {3,4}, {0,4}};
-assert(dimensionIP(L, 5) == 2)
-assert(dimensionIP(L, 6) == 3)
-///
-
-TEST ///
-R=QQ[x,y,z];
-assert(
-    #monomialIdealsWithHilbertFunction({1,2,1,0},R)==9
-    )
-assert(
-    #monomialIdealsWithHilbertFunction({1,3,4,2,1,0},R)==156
-    )
-R=QQ[x,y,z,w];
-assert(
-    #monomialIdealsWithHilbertFunction({1,4,3,1,0},R)==244
-    )
-assert(
-    all(monomialIdealsWithHilbertFunction({1,4,10,19,31},R), I -> numgens I == 1)
-    )
-///
-
-TEST /// --top min primes
-R = QQ[x,y,z,w,v];
-I = monomialIdeal(x*y*w, x*z*v, y*x, y*z*v);
-assert(
-    set(topMinimalPrimesIP(I))===set(minimalPrimes I)
-    )
-J = monomialIdeal(x^2*y*w^3*z, x*y*z*w*v, y*x^8*v, y^5*z*v, x^10, z^10, v^10);
-assert(
-    topMinimalPrimesIP(J) == {monomialIdeal(x,z,v)}
-    )
-K = monomialIdeal(x^2*y*w^3*z, x*y*z*w*v, y*x^8*v, y^5*z*v, y*x^10, v*z^10, w*v^10);
-assert(
-    set(topMinimalPrimesIP(K))===set(select(minimalPrimes(K), p -> 3 == dim p))
-    )
-L = monomialIdeal(y^12, x*y^3, z*w^3, z*v*y^10, z*x^10, v*z^10, w*v^10, y*v*x*z*w);
-assert(
-    set(topMinimalPrimesIP(L))===set(select(minimalPrimes(L), p -> 2 == dim p))    
-    )
-///
 
 -------------------
 -- documentation --
@@ -814,6 +775,79 @@ doc ///
  SeeAlso
   MonomialIntegerPrograms
 ///
+
+-----------
+-- tests --
+-----------
+
+TEST /// --dim and codim
+R = QQ[x_1..x_10];
+I = monomialIdeal(x_1*x_4*x_7^3,x_1^2*x_8^3,x_1*x_2*x_8^2*x_9,x_1*x_4^2*x_9^2,x_1*x_7^2*x_9^2);
+assert(
+    codimensionIP(I) == codim I
+    )
+assert(
+    dimensionIP(I) == dim I
+    )
+J = monomialIdeal(x_3^2*x_5*x_6*x_8,x_4^4*x_9,x_7^2*x_8^2*x_9,x_4*x_5*x_8*x_9^2,x_2^2*x_4*x_10^2);
+assert(
+    codimensionIP(J) == codim J
+    )
+assert(
+    dimensionIP(J) == dim J
+    )
+K = monomialIdeal(x_4^5,x_2*x_3*x_5^2*x_7,x_2*x_5*x_7^3,x_2*x_3^2*x_7*x_8,x_1^4*x_9,x_4*x_6*x_8*x_9^2,x_1*x_4^3*x_10,x_1^2*x_5*x_6*x_10,x_3^3*x_7*x_10,x_1^2*x_7*x_9*x_10,x_1*x_5*x_8*x_10^2,x_2*x_7*x_8*x_10^2,x_3^2*x_10^3,x_3*x_9*x_10^3);
+assert(
+    codimensionIP(K) == codim K
+    )
+assert(
+    dimensionIP(K) == dim K
+    )
+///
+
+TEST ///
+L = {{0,1,3}, {1,2}, {2,3}, {3,4}, {0,4}};
+assert(dimensionIP(L, 5) == 2)
+assert(dimensionIP(L, 6) == 3)
+///
+
+TEST /// --hilbert
+R=QQ[x,y,z];
+assert(
+    #monomialIdealsWithHilbertFunction({1,2,1,0},R)==9
+    )
+assert(
+    #monomialIdealsWithHilbertFunction({1,3,4,2,1,0},R)==156
+    )
+R=QQ[x,y,z,w];
+assert(
+    #monomialIdealsWithHilbertFunction({1,4,3,1,0},R)==244
+    )
+assert(
+    all(monomialIdealsWithHilbertFunction({1,4,10,19,31},R), I -> numgens I == 1)
+    )
+///
+
+TEST /// --top min primes
+R = QQ[x,y,z,w,v];
+I = monomialIdeal(x*y*w, x*z*v, y*x, y*z*v);
+assert(
+    set(topMinimalPrimesIP(I))===set(minimalPrimes I)
+    )
+J = monomialIdeal(x^2*y*w^3*z, x*y*z*w*v, y*x^8*v, y^5*z*v, x^10, z^10, v^10);
+assert(
+    topMinimalPrimesIP(J) == {monomialIdeal(x,z,v)}
+    )
+K = monomialIdeal(x^2*y*w^3*z, x*y*z*w*v, y*x^8*v, y^5*z*v, y*x^10, v*z^10, w*v^10);
+assert(
+    set(topMinimalPrimesIP(K))===set(select(minimalPrimes(K), p -> 3 == dim p))
+    )
+L = monomialIdeal(y^12, x*y^3, z*w^3, z*v*y^10, z*x^10, v*z^10, w*v^10, y*v*x*z*w);
+assert(
+    set(topMinimalPrimesIP(L))===set(select(minimalPrimes(L), p -> 2 == dim p))    
+    )
+///
+
  
 
 end--
