@@ -46,7 +46,7 @@ print("Current value of ScipPrintLevel is 1.")
 
 codimensionIP = method();
 codimensionIP (MonomialIdeal) := I -> (
-    (dir, zimplFile, solFile, errorFile, detailsFile) := tempDirectoryAndFiles("dim");
+    (dir, zimplFile, solFile, errorFile, detailsFile) := tempDirectoryAndFiles("codim");
     zimplFile << codimensionIPFormulation(I) << close;
     run(concatenate("(",ScipPath, 
 	    " -c 'read ", zimplFile,
@@ -516,6 +516,11 @@ doc ///
    the dimension of $I$. That is, $k$ is the maximum dimension of
    a coordinate subspace in the variety of $I$.
  Description
+  Text
+   This function calls @TO codimensionIP@ and then returns $n$-codimensionIP($I$), where 
+   $n$ is the number of variables in the polynomial ring where $I$ is defined.
+   The integer programming input and output files created will therefore be named
+   "codim.zpl", "codim.errors", etc. as with @TO codimensionIP@. 
   Example
    R = QQ[x,y,z,w,v];
    I = monomialIdeal(x*y*w, x*z*v, y*x, y*z*v);
@@ -529,8 +534,8 @@ doc ///
    dimensionIP(J) 
   Text
    The dimension of a monomial ideal is equal to the dimension
-   of its radical. If $I$ is not squarefree, then {\tt dimensionIP(I)}
-   will call {\tt dimensionIP(radical I)}.
+   of its radical. Therefore, when looking at the IP formulation written to
+   the temporary file "codim.zpl", you will see that exponents are ignored.
  SeeAlso
   (dim, MonomialIdeal)
   codimensionIP
@@ -553,25 +558,27 @@ doc ///
    the codimension of $I$
  Description
   Text
-   This function calls @TO dimensionIP@ and then returns $n$-dimensionIP($I$), where 
-   $n$ is the number of variables in the polynomial ring where $I$ is defined.
-   The integer programming input and output files created will therefore be named
-   "dim.zpl", "dim.errors", etc. as with @TO dimensionIP@. 
+   The integer programming input and output files created are named
+   "codim.zpl", "codim.errors", etc., and saved to a temporary directory.
+   By default the location of the temporary directory is printed to the
+   screen.
   Example
    R = QQ[x,y,z,w,v];
    I = monomialIdeal(x*y*w, x*z*v, y*x, y*z*v);
    codimensionIP(I)
   Text
    The verbosity of every function in the MonomialIntegerPrograms package is controlled with
-   @TO symbol ScipPrintLevel@.
+   @TO symbol ScipPrintLevel@. For example, to suppress printing the name of
+   the directory or any other information and simply return the answer, set
+   {\tt ScipPrintLevel} to 0.
   Example
    ScipPrintLevel = 0;
    J = monomialIdeal(x*y^3*z^7, y^4*w*v, z^2*v^8, x*w^3*v^3, y^10, z^10)
    codimensionIP(J) 
   Text
-   The dimension of a monomial ideal is equal to the dimension
-   of its radical. If $I$ is not squarefree, then {\tt dimensionIP(I)}
-   will call {\tt dimensionIP(radical I)}.
+   The codimension of a monomial ideal is equal to the codimension
+   of its radical. Therefore, when looking at the IP formulation written to
+   the temporary file "codim.zpl", you will see that exponents are ignored.
  SeeAlso
   (codim, MonomialIdeal)
   dimensionIP
