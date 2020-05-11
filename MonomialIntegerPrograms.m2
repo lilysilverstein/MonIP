@@ -3,7 +3,7 @@ newPackage (
   Version=>"0.1",
   Authors => {{
       Name => "Lily Silverstein", 
-      Email => "lsilverstein@cpp.edu"
+      Email => "lsilverstein@cpp.edu",
       HomePage => "cpp.edu/faculty/lsilverstein"
       }},
   Headline => "using integer programming for fast computations with monomial ideals",
@@ -135,7 +135,7 @@ topMinimalPrimesIP = method(
     );
 topMinimalPrimesIP (MonomialIdeal) := o -> I -> (
     if I == monomialIdeal(1_(ring I)) then return I;
-    if not isSquareFree I then error("only implemented for squarefree monomial ideals at this time!");
+    if not isSquareFree I then I = polarize I;
     k := if o.KnownDim >= 0 then o.KnownDim else dimensionIP(I);
     (dir, zimplFile, solFile, errorFile, detailsFile) := tempDirectoryAndFiles("comps");        
     zimplFile << degreeIPFormulation(I, k) << close;
