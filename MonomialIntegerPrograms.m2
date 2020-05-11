@@ -3,8 +3,8 @@ newPackage (
   Version=>"0.1",
   Authors => {{
       Name => "Lily Silverstein", 
-      Email => "lsilver@math.ucdavis.edu",
-      HomePage => "math.ucdavis.edu/~lsilver"
+      Email => "lsilverstein@cpp.edu"
+      HomePage => "cpp.edu/faculty/lsilverstein"
       }},
   Headline => "using integer programming for fast computations with monomial ideals",
   Configuration => {
