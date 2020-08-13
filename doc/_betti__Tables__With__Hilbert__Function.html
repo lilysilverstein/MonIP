@@ -1,0 +1,472 @@
+<?xml version="1.0" encoding="utf-8" ?>  <!-- for emacs: -*- coding: utf-8 -*- -->
+<!-- Apache may like this line in the file .htaccess: AddCharset utf-8 .html -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN"	 "http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg.dtd" >
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+  <title>bettiTablesWithHilbertFunction -- list or tally all Betti tables that can be obtained from monomial ideals with a particular (partial or complete) Hilbert function</title>
+  <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+  <link type="text/css" rel="stylesheet" href="/usr/local/share/Macaulay2/Style/doc.css"/>
+</head>
+<body>
+  <table class="buttons">
+    <tr>
+      <td>
+        <div>
+<a href="___Bound__Generators.html">next</a> | <a href="index.html">previous</a> | <a href="___Bound__Generators.html">forward</a> | <a href="index.html">backward</a> | up | <a href="index.html">top</a> | <a href="master.html">index</a> | <a href="toc.html">toc</a> | <a href="http://www.math.uiuc.edu/Macaulay2/">Macaulay2 web site</a>        </div>
+      </td>
+    </tr>
+  </table>
+  <div>
+<a href="index.html" title="A package for fast monomial ideal computations using constraint integer programming">MonomialIntegerPrograms</a> :: <a href="_betti__Tables__With__Hilbert__Function.html" title="list or tally all Betti tables that can be obtained from monomial ideals with a particular (partial or complete) Hilbert function">bettiTablesWithHilbertFunction</a>  </div>
+  <hr/>
+  <div>
+    <h1>bettiTablesWithHilbertFunction -- list or tally all Betti tables that can be obtained from monomial ideals with a particular (partial or complete) Hilbert function</h1>
+    <div>
+      <h2>Synopsis</h2>
+      <ul>
+        <li>
+          <dl class="element">
+            <dt>Usage: </dt>
+            <dd><tt>bettiTablesWithHilbertFunction(L, R)</tt></dd>
+            <dd><tt>bettiTablesWithHilbertFunction(L, R, BoundGenerators => a)</tt></dd>
+            <dd><tt>bettiTablesWithHilbertFunction(L, R, FirstBetti => b)</tt></dd>
+            <dd><tt>bettiTablesWithHilbertFunction(L, R, GradedBettis => B)</tt></dd>
+            <dd><tt>bettiTablesWithHilbertFunction(L, R, SquareFree => x)</tt></dd>
+            <dd><tt>bettiTablesWithHilbertFunction(L, R, Count => y)</tt></dd>
+          </dl>
+        </li>
+        <li>
+Inputs:          <ul>
+            <li>
+<span><tt>L</tt>, <span>a <a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/___List.html">list</a></span>, <i>{h(0), h(1), ..., h(d)}</i>, the values of a valid Hilbert function for <i>R</i> for degrees <i>0...d</i>.</span>            </li>
+            <li>
+<span><tt>R</tt>, <span>a <a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/___Polynomial__Ring.html">polynomial ring</a></span></span>            </li>
+          </ul>
+        </li>
+        <li>
+<a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/_using_spfunctions_spwith_spoptional_spinputs.html">Optional inputs</a>:          <ul>
+            <li>
+<span><tt>BoundGenerators => </tt><span><span>an <a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/___Z__Z.html">integer</a></span>, <span>default value -1</span>, a degree bound on the monomial generators</span></span>            </li>
+            <li>
+<span><tt>FirstBetti => </tt><span><span>an <a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/___Z__Z.html">integer</a></span>, <span>default value null</span>, a specified first total Betti number</span></span>            </li>
+            <li>
+<span><tt>GradedBettis => </tt><span><span>a <a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/___List.html">list</a></span>, <span>default value null</span>, if the form <i>{b<sub>0</sub>, b<sub>1</sub>, ..., b<sub>d</sub>}</i>, where <i>b<sub>i</sub></i> is the first graded Betti numbers with degree <i>i</i>.</span></span>            </li>
+            <li>
+<span><tt>SquareFree => </tt><span><span>a <a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/___Boolean.html">Boolean value</a></span>, <span>default value false</span>, whether or not to consider squarefree monomial ideals only</span></span>            </li>
+            <li>
+<span><tt>Count => </tt><span><span>a <a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/___Boolean.html">Boolean value</a></span>, <span>default value false</span>, whether or not to return the count of unique tables instead of all values</span></span>            </li>
+          </ul>
+        </li>
+        <li>
+Outputs:          <ul>
+            <li>
+<span><span>a <a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/___List.html">list</a></span>, all unique Betti tables that can be obtained from monomial ideals of <i>R</i> with Hilbert function beginning with <i>L</i>, or</span>            </li>
+            <li>
+<span><span>a <a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/___Tally.html">tally</a></span>, the same set of Betti tables, with the number of unique monomial ideals producing each one</span>            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <div>
+      <h2>Description</h2>
+      <div>
+        <p>This function calls <a href="_monomial__Ideals__With__Hilbert__Function.html" title="find all monomial ideals in a polynomial ring with a particular (partial or complete) Hilbert function">monomialIdealsWithHilbertFunction</a> with the specified options, determines the Betti table of each feasible monomial ideal, then lists or tallies the Betti tables encountered. The Count option does not fundamentally change how the computation is performed, only how the results are reported.</p>
+      </div>
+      <table class="examples">
+        <tr>
+          <td>
+            <pre>i1 : R = QQ[x,y,z]; L = {1, 3, 5, 5, 4};
+
+i3 : bettiTablesWithHilbertFunction(L, R)
+
+             0 1 2 3         0 1 2 3         0 1 2 3         0 1 2 3
+o3 = {total: 1 4 4 1, total: 1 4 4 1, total: 1 4 4 1, total: 1 3 3 1, total:
+          0: 1 . . .      0: 1 . . .      0: 1 . . .      0: 1 . . .      0:
+          1: . 1 . .      1: . 1 . .      1: . 1 . .      1: . 1 . .      1:
+          2: . 2 2 .      2: . 2 2 .      2: . 2 2 .      2: . 2 1 .      2:
+          3: . 1 2 1      3: . 1 1 .      3: . 1 . .      3: . . 2 1      3:
+                          4: . . 1 1      4: . . 2 .                      4:
+                                          5: . . . 1
+
+     0 1 2 3         0 1 2 3         0 1 2 3         0 1 2 3         0 1 2 3
+     1 4 5 2, total: 1 4 5 2, total: 1 3 3 1, total: 1 5 6 2, total: 1 5 6 2,
+     1 . . .      0: 1 . . .      0: 1 . . .      0: 1 . . .      0: 1 . . .
+     . 1 . .      1: . 1 . .      1: . 1 . .      1: . 1 . .      1: . 1 . .
+     . 2 2 .      2: . 2 2 .      2: . 2 1 .      2: . 2 3 1      2: . 2 3 1
+     . 1 . .      3: . 1 . .      3: . . 1 .      3: . 2 3 1      3: . 2 2 .
+     . . 3 2      4: . . 1 .      4: . . 1 1                      4: . . 1 1
+                  5: . . 2 2
+
+            0 1 2 3         0 1 2 3         0 1 2 3         0 1 2 3         0
+     total: 1 5 6 2, total: 1 5 7 3, total: 1 5 7 3, total: 1 5 7 3, total: 1
+         0: 1 . . .      0: 1 . . .      0: 1 . . .      0: 1 . . .      0: 1
+         1: . 1 . .      1: . 1 . .      1: . 1 . .      1: . 1 . .      1: .
+         2: . 2 3 1      2: . 2 3 1      2: . 2 3 1      2: . 2 3 1      2: .
+         3: . 2 2 .      3: . 2 1 .      3: . 2 1 .      3: . 2 1 .      3: .
+         4: . . . .      4: . . 2 1      4: . . 3 2      4: . . 2 1      4: .
+         5: . . 1 1      5: . . 1 1                      5: . . . .      5: .
+                                                         6: . . 1 1
+     1 2 3         0 1 2 3         0 1 2 3
+     4 5 2, total: 1 5 6 2, total: 1 4 4 1}
+     . . .      0: 1 . . .      0: 1 . . .
+     1 . .      1: . 1 . .      1: . 1 . .
+     2 2 .      2: . 2 3 1      2: . 2 2 .
+     1 . .      3: . 2 2 .      3: . 1 1 .
+     . 2 1      4: . . . .      4: . . . .
+     . 1 1      5: . . . .      5: . . 1 1
+                6: . . 1 1
+
+o3 : List
+
+i4 : bettiTablesWithHilbertFunction(L, R, Count => true)
+
+                  0 1 2 3
+o4 = Tally{total: 1 3 3 1 => 12 }
+               0: 1 . . .
+               1: . 1 . .
+               2: . 2 1 .
+               3: . . 1 .
+               4: . . 1 1
+                  0 1 2 3
+           total: 1 3 3 1 => 27
+               0: 1 . . .
+               1: . 1 . .
+               2: . 2 1 .
+               3: . . 2 1
+                  0 1 2 3
+           total: 1 4 4 1 => 6
+               0: 1 . . .
+               1: . 1 . .
+               2: . 2 2 .
+               3: . 1 . .
+               4: . . 2 .
+               5: . . . 1
+                  0 1 2 3
+           total: 1 4 4 1 => 12
+               0: 1 . . .
+               1: . 1 . .
+               2: . 2 2 .
+               3: . 1 1 .
+               4: . . . .
+               5: . . 1 1
+                  0 1 2 3
+           total: 1 4 4 1 => 78
+               0: 1 . . .
+               1: . 1 . .
+               2: . 2 2 .
+               3: . 1 1 .
+               4: . . 1 1
+                  0 1 2 3
+           total: 1 4 4 1 => 174
+               0: 1 . . .
+               1: . 1 . .
+               2: . 2 2 .
+               3: . 1 2 1
+                  0 1 2 3
+           total: 1 4 5 2 => 6
+               0: 1 . . .
+               1: . 1 . .
+               2: . 2 2 .
+               3: . 1 . .
+               4: . . 2 1
+               5: . . 1 1
+                  0 1 2 3
+           total: 1 4 5 2 => 9
+               0: 1 . . .
+               1: . 1 . .
+               2: . 2 2 .
+               3: . 1 . .
+               4: . . 1 .
+               5: . . 2 2
+                  0 1 2 3
+           total: 1 4 5 2 => 15
+               0: 1 . . .
+               1: . 1 . .
+               2: . 2 2 .
+               3: . 1 . .
+               4: . . 3 2
+                  0 1 2 3
+           total: 1 5 6 2 => 6
+               0: 1 . . .
+               1: . 1 . .
+               2: . 2 3 1
+               3: . 2 2 .
+               4: . . . .
+               5: . . . .
+               6: . . 1 1
+                  0 1 2 3
+           total: 1 5 6 2 => 24
+               0: 1 . . .
+               1: . 1 . .
+               2: . 2 3 1
+               3: . 2 2 .
+               4: . . . .
+               5: . . 1 1
+                  0 1 2 3
+           total: 1 5 6 2 => 54
+               0: 1 . . .
+               1: . 1 . .
+               2: . 2 3 1
+               3: . 2 2 .
+               4: . . 1 1
+                  0 1 2 3
+           total: 1 5 6 2 => 150
+               0: 1 . . .
+               1: . 1 . .
+               2: . 2 3 1
+               3: . 2 3 1
+                  0 1 2 3
+           total: 1 5 7 3 => 12
+               0: 1 . . .
+               1: . 1 . .
+               2: . 2 3 1
+               3: . 2 1 .
+               4: . . 2 1
+               5: . . . .
+               6: . . 1 1
+                  0 1 2 3
+           total: 1 5 7 3 => 12
+               0: 1 . . .
+               1: . 1 . .
+               2: . 2 3 1
+               3: . 2 1 .
+               4: . . 2 1
+               5: . . 1 1
+                  0 1 2 3
+           total: 1 5 7 3 => 12
+               0: 1 . . .
+               1: . 1 . .
+               2: . 2 3 1
+               3: . 2 1 .
+               4: . . 3 2
+
+o4 : Tally</pre>
+          </td>
+        </tr>
+      </table>
+      <div>
+        <p>Some more examples showing usage of various optional inputs.</p>
+      </div>
+      <div>
+        <p>BoundGenerators option</p>
+      </div>
+      <table class="examples">
+        <tr>
+          <td>
+            <pre>i5 : bettiTablesWithHilbertFunction(L, R, BoundGenerators => 3, Count => true)
+
+                  0 1 2 3
+o5 = Tally{total: 1 3 3 1 => 12}
+               0: 1 . . .
+               1: . 1 . .
+               2: . 2 1 .
+               3: . . 1 .
+               4: . . 1 1
+                  0 1 2 3
+           total: 1 3 3 1 => 27
+               0: 1 . . .
+               1: . 1 . .
+               2: . 2 1 .
+               3: . . 2 1
+
+o5 : Tally
+
+i6 : bettiTablesWithHilbertFunction(L, R, BoundGenerators => 3)
+
+             0 1 2 3         0 1 2 3
+o6 = {total: 1 3 3 1, total: 1 3 3 1}
+          0: 1 . . .      0: 1 . . .
+          1: . 1 . .      1: . 1 . .
+          2: . 2 1 .      2: . 2 1 .
+          3: . . 2 1      3: . . 1 .
+                          4: . . 1 1
+
+o6 : List</pre>
+          </td>
+        </tr>
+      </table>
+      <div>
+        <p>SquareFree option</p>
+      </div>
+      <table class="examples">
+        <tr>
+          <td>
+            <pre>i7 : S = QQ[a..f]
+
+o7 = S
+
+o7 : PolynomialRing
+
+i8 : bettiTablesWithHilbertFunction({1, 6, 19, 45, 86}, S, SquareFree => true)
+
+             0 1 2 3
+o8 = {total: 1 6 8 3}
+          0: 1 . . .
+          1: . 2 1 .
+          2: . . . .
+          3: . 4 7 3
+
+o8 : List</pre>
+          </td>
+        </tr>
+      </table>
+      <div>
+        <p>FirstBetti option</p>
+      </div>
+      <table class="examples">
+        <tr>
+          <td>
+            <pre>i9 : bettiTablesWithHilbertFunction({1, 3, 6, 5, 4, 4}, R, FirstBetti => 5)
+
+             0 1 2 3         0 1 2 3
+o9 = {total: 1 5 5 1, total: 1 5 6 2}
+          0: 1 . . .      0: 1 . . .
+          1: . . . .      1: . . . .
+          2: . 5 4 .      2: . 5 4 1
+          3: . . 1 1      3: . . 2 1
+
+o9 : List</pre>
+          </td>
+        </tr>
+      </table>
+      <div>
+        <p>GradedBettis option</p>
+      </div>
+      <table class="examples">
+        <tr>
+          <td>
+            <pre>i10 : bettiTablesWithHilbertFunction({1, 3, 4, 2, 1}, R, GradedBettis => {0, 0, 2, 2, 1}, Count => true)
+
+                   0 1 2 3
+o10 = Tally{total: 1 5 7 3 => 12}
+                0: 1 . . .
+                1: . 2 . .
+                2: . 2 5 2
+                3: . 1 1 .
+                4: . . 1 1
+                   0 1 2 3
+            total: 1 5 7 3 => 18
+                0: 1 . . .
+                1: . 2 . .
+                2: . 2 5 2
+                3: . 1 2 1
+
+o10 : Tally</pre>
+          </td>
+        </tr>
+      </table>
+      <div>
+        <p>FirstBetti and BoundGenerators</p>
+      </div>
+      <table class="examples">
+        <tr>
+          <td>
+            <pre>i11 : bettiTablesWithHilbertFunction({1, 3, 6, 7, 6, 5, 4, 4, 4}, R, FirstBetti => 6, BoundGenerators => 5, Count => true)
+
+                   0 1 2 3
+o11 = Tally{total: 1 6 7 2 => 48 }
+                0: 1 . . .
+                1: . . . .
+                2: . 3 3 1
+                3: . 3 3 .
+                4: . . . .
+                5: . . 1 1
+                   0 1 2 3
+            total: 1 6 7 2 => 522
+                0: 1 . . .
+                1: . . . .
+                2: . 3 2 .
+                3: . 2 3 1
+                4: . 1 1 .
+                5: . . 1 1
+                   0 1 2 3
+            total: 1 6 8 3 => 12
+                0: 1 . . .
+                1: . . . .
+                2: . 3 3 1
+                3: . 3 3 1
+                4: . . 1 .
+                5: . . 1 1
+                   0 1 2 3
+            total: 1 6 8 3 => 72
+                0: 1 . . .
+                1: . . . .
+                2: . 3 1 .
+                3: . 1 4 2
+                4: . 2 2 .
+                5: . . 1 1
+
+o11 : Tally</pre>
+          </td>
+        </tr>
+      </table>
+      <div>
+        <p>FirstBetti and SquareFree</p>
+      </div>
+      <table class="examples">
+        <tr>
+          <td>
+            <pre>i12 : bettiTablesWithHilbertFunction({1, 4, 7, 10, 13}, S, SquareFree => true, FirstBetti => 5)
+
+              0 1 2 3 4
+o12 = {total: 1 5 9 7 2}
+           0: 1 2 1 . .
+           1: . 3 8 7 2
+
+o12 : List</pre>
+          </td>
+        </tr>
+      </table>
+      <div>
+        <p>GradedBettis and Squarefree</p>
+      </div>
+      <table class="examples">
+        <tr>
+          <td>
+            <pre>i13 : bettiTablesWithHilbertFunction({1, 4, 7, 10, 13}, S, SquareFree => true, GradedBettis => {0, 2, 3, 1, 0})
+
+              0 1  2  3 4 5
+o13 = {total: 1 6 13 13 6 1}
+           0: 1 2  1  . . .
+           1: . 3  9 10 5 1
+           2: . 1  3  3 1 .
+
+o13 : List</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h2>See also</h2>
+      <ul>
+        <li>
+<span><a href="_monomial__Ideals__With__Hilbert__Function.html" title="find all monomial ideals in a polynomial ring with a particular (partial or complete) Hilbert function">monomialIdealsWithHilbertFunction</a> -- find all monomial ideals in a polynomial ring with a particular (partial or complete) Hilbert function</span>        </li>
+        <li>
+<span><tt>betti(GradedModule)</tt> (missing documentation<!-- tag: (betti,GradedModule) -->) -- display of degrees in a graded module</span>        </li>
+        <li>
+<span><a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/___Betti__Tally.html" title="the class of all Betti tallies">BettiTally</a> -- the class of all Betti tallies</span>        </li>
+        <li>
+<span><a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/___Hash__Table.html" title="the class of all hash tables">HashTable</a> -- the class of all hash tables</span>        </li>
+        <li>
+<span><a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/_tally.html" title="tally the elements of a list or sequence">tally</a> -- tally the elements of a list or sequence</span>        </li>
+        <li>
+<span><a href="/usr/local/share/doc/Macaulay2/LexIdeals/html/_hilbert__Funct.html" title="return the Hilbert function of a polynomial ring mod a homogeneous ideal as a list">hilbertFunct</a> -- return the Hilbert function of a polynomial ring mod a homogeneous ideal as a list</span>        </li>
+        <li>
+<span><a href="/usr/local/share/doc/Macaulay2/LexIdeals/html/_is__H__F.html" title="is a finite list a Hilbert function of a polynomial ring mod a homogeneous ideal">isHF</a> -- is a finite list a Hilbert function of a polynomial ring mod a homogeneous ideal</span>        </li>
+        <li>
+<span><a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/_is__Square__Free.html" title="whether something is square free monomial ideal">isSquareFree</a> -- whether something is square free monomial ideal</span>        </li>
+        <li>
+<span><a href="/usr/local/share/doc/Macaulay2/LexIdeals/html/index.html" title="a package for working with lex ideals">LexIdeals</a> -- a package for working with lex ideals</span>        </li>
+      </ul>
+    </div>
+    <div class="waystouse">
+      <h2>Ways to use <tt>bettiTablesWithHilbertFunction</tt> :</h2>
+      <ul>
+        <li>
+bettiTablesWithHilbertFunction(List,PolynomialRing)        </li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>
+

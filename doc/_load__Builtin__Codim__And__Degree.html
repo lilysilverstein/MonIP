@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8" ?>  <!-- for emacs: -*- coding: utf-8 -*- -->
+<!-- Apache may like this line in the file .htaccess: AddCharset utf-8 .html -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN"	 "http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg.dtd" >
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+  <title>loadBuiltinCodimAndDegree -- change codim and degree to use the default, built-in methods.</title>
+  <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+  <link type="text/css" rel="stylesheet" href="/usr/local/share/Macaulay2/Style/doc.css"/>
+</head>
+<body>
+  <table class="buttons">
+    <tr>
+      <td>
+        <div>
+<a href="_load__S__C__I__P__Codim__And__Degree.html">next</a> | <a href="___Ignore__Primes.html">previous</a> | <a href="_load__S__C__I__P__Codim__And__Degree.html">forward</a> | <a href="___Ignore__Primes.html">backward</a> | up | <a href="index.html">top</a> | <a href="master.html">index</a> | <a href="toc.html">toc</a> | <a href="http://www.math.uiuc.edu/Macaulay2/">Macaulay2 web site</a>        </div>
+      </td>
+    </tr>
+  </table>
+  <div>
+<a href="index.html" title="A package for fast monomial ideal computations using constraint integer programming">MonomialIntegerPrograms</a> :: <a href="_load__Builtin__Codim__And__Degree.html" title="change codim and degree to use the default, built-in methods.">loadBuiltinCodimAndDegree</a>  </div>
+  <hr/>
+  <div>
+    <h1>loadBuiltinCodimAndDegree -- change codim and degree to use the default, built-in methods.</h1>
+    <div>
+      <h2>Synopsis</h2>
+      <ul>
+        <li>
+          <dl class="element">
+            <dt>Usage: </dt>
+            <dd><tt>loadBuiltinCodimAndDegree()</tt></dd>
+          </dl>
+        </li>
+      </ul>
+    </div>
+    <div>
+      <h2>Description</h2>
+      <div>
+        <p>When the package is loaded, <a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/_codim.html" title="compute the codimension">codim</a> and <a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/_degree.html" title="">degree</a> are replaced with <tt>codimensionIP</tt> and <tt>degreeIP</tt> respectively for a <tt>MonomialIdeal</tt>. Any other functions that rely on codim, such as <a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/_dim.html" title="compute the Krull dimension">dim</a>, are affected accordingly.</p>
+        <p><tt>loadBuiltinCodimAndDegree</tt> reloads the built-in methods.</p>
+      </div>
+      <table class="examples">
+        <tr>
+          <td>
+            <pre>i1 : R = QQ[a,b,c];</pre>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <pre>i2 : ScipPrintLevel = 1;</pre>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <pre>i3 : codim(monomialIdeal(a^2, b*a, c*b))
+Codim files saved in directory: /tmp/M2-24968-0/0
+
+o3 = 2</pre>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <pre>i4 : degree(monomialIdeal(a^2, b*a, c*b))
+Codim files saved in directory: /tmp/M2-24968-0/1
+Degree files saved in directory: /tmp/M2-24968-0/2
+
+o4 = 3</pre>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <pre>i5 : loadBuiltinCodimAndDegree();</pre>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <pre>i6 : codim(monomialIdeal(a^2, b*a, c*b))
+
+o6 = 2</pre>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <pre>i7 : degree(monomialIdeal(a^2, b*a, c*b))
+
+o7 = 3</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h2>See also</h2>
+      <ul>
+        <li>
+<span><a href="_load__S__C__I__P__Codim__And__Degree.html" title="change codim and degree to use the IP methods from this package">loadSCIPCodimAndDegree</a> -- change codim and degree to use the IP methods from this package</span>        </li>
+        <li>
+<span><a href="_codimension__I__P.html" title="compute the codimension of a monomial ideal using integer programming">codimensionIP</a> -- compute the codimension of a monomial ideal using integer programming</span>        </li>
+        <li>
+<span><a href="_degree__I__P.html" title="compute the degree of a monomial ideal using integer programming">degreeIP</a> -- compute the degree of a monomial ideal using integer programming</span>        </li>
+        <li>
+<span><tt>codim(Ideal)</tt> (missing documentation<!-- tag: (codim,Ideal) -->) -- compute the codimension</span>        </li>
+        <li>
+<span><tt>degree(Ideal)</tt> (missing documentation<!-- tag: (degree,Ideal) -->)</span>        </li>
+        <li>
+<span><tt>dim(Ideal)</tt> (missing documentation<!-- tag: (dim,Ideal) -->) -- compute the Krull dimension</span>        </li>
+      </ul>
+    </div>
+    <div class="waystouse">
+      <h2>Ways to use <tt>loadBuiltinCodimAndDegree</tt> :</h2>
+      <ul>
+        <li>
+<span><tt>loadBuiltinCodimAndDegree()</tt> (missing documentation<!-- tag: 1 : (loadBuiltinCodimAndDegree) -->)</span>        </li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>
+

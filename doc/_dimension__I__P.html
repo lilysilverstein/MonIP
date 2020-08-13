@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8" ?>  <!-- for emacs: -*- coding: utf-8 -*- -->
+<!-- Apache may like this line in the file .htaccess: AddCharset utf-8 .html -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN"	 "http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg.dtd" >
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+  <title>dimensionIP -- compute the dimension of a monomial ideal using integer programming</title>
+  <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+  <link type="text/css" rel="stylesheet" href="/usr/local/share/Macaulay2/Style/doc.css"/>
+</head>
+<body>
+  <table class="buttons">
+    <tr>
+      <td>
+        <div>
+<a href="___First__Betti.html">next</a> | <a href="_degree__I__P.html">previous</a> | <a href="___First__Betti.html">forward</a> | <a href="_degree__I__P.html">backward</a> | up | <a href="index.html">top</a> | <a href="master.html">index</a> | <a href="toc.html">toc</a> | <a href="http://www.math.uiuc.edu/Macaulay2/">Macaulay2 web site</a>        </div>
+      </td>
+    </tr>
+  </table>
+  <div>
+<a href="index.html" title="A package for fast monomial ideal computations using constraint integer programming">MonomialIntegerPrograms</a> :: <a href="_dimension__I__P.html" title="compute the dimension of a monomial ideal using integer programming">dimensionIP</a>  </div>
+  <hr/>
+  <div>
+    <h1>dimensionIP -- compute the dimension of a monomial ideal using integer programming</h1>
+    <div>
+      <h2>Synopsis</h2>
+      <ul>
+        <li>
+          <dl class="element">
+            <dt>Usage: </dt>
+            <dd><tt>k = dimensionIP(I)</tt></dd>
+          </dl>
+        </li>
+        <li>
+Inputs:          <ul>
+            <li>
+<span><tt>I</tt>, <span>a <a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/___Monomial__Ideal.html">monomial ideal</a></span></span>            </li>
+          </ul>
+        </li>
+        <li>
+Outputs:          <ul>
+            <li>
+<span><tt>k</tt>, <span>an <a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/___Z__Z.html">integer</a></span>, the dimension of <i>I</i>. That is, <i>k</i> is the maximum dimension of a coordinate subspace in the variety of <i>I</i>.</span>            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <div>
+      <h2>Description</h2>
+      <div>
+        <p>This function calls <a href="_codimension__I__P.html" title="compute the codimension of a monomial ideal using integer programming">codimensionIP</a> and then returns <i>n</i>-codimensionIP(<i>I</i>), where <i>n</i> is the number of variables in the polynomial ring where <i>I</i> is defined. The integer programming input and output files created will therefore be named "codim.zpl", "codim.errors", etc. as with <a href="_codimension__I__P.html" title="compute the codimension of a monomial ideal using integer programming">codimensionIP</a>.</p>
+      </div>
+      <table class="examples">
+        <tr>
+          <td>
+            <pre>i1 : R = QQ[x,y,z,w,v];</pre>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <pre>i2 : I = monomialIdeal(x*y*w, x*z*v, y*x, y*z*v);
+
+o2 : MonomialIdeal of R</pre>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <pre>i3 : dimensionIP(I)
+
+o3 = 3</pre>
+          </td>
+        </tr>
+      </table>
+      <div>
+        <p>The location of input/output files for SCIP solving is printed to the screen by default. To change this, see <a href="___Scip__Print__Level.html" title="adjust how much solving information is displayed in MonomialIntegerPrograms">ScipPrintLevel</a>.</p>
+      </div>
+      <table class="examples">
+        <tr>
+          <td>
+            <pre>i4 : ScipPrintLevel = 0;</pre>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <pre>i5 : J = monomialIdeal(x*y^3*z^7, y^4*w*v, z^2*v^8, x*w^3*v^3, y^10, z^10)
+
+                     10     3 7   10   4        3 3   2 8
+o5 = monomialIdeal (y  , x*y z , z  , y w*v, x*w v , z v )
+
+o5 : MonomialIdeal of R</pre>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <pre>i6 : dimensionIP(J)
+
+o6 = 2</pre>
+          </td>
+        </tr>
+      </table>
+      <div>
+        <p>The dimension of a monomial ideal is equal to the dimension of its radical. Therefore, when looking at the IP formulation written to the temporary file "codim.zpl", you will see that exponents are ignored.</p>
+      </div>
+    </div>
+    <div>
+      <h2>See also</h2>
+      <ul>
+        <li>
+<span><tt>dim(MonomialIdeal)</tt> (missing documentation<!-- tag: (dim,MonomialIdeal) -->) -- compute the Krull dimension</span>        </li>
+        <li>
+<span><a href="_codimension__I__P.html" title="compute the codimension of a monomial ideal using integer programming">codimensionIP</a> -- compute the codimension of a monomial ideal using integer programming</span>        </li>
+        <li>
+<span><a href="index.html" title="A package for fast monomial ideal computations using constraint integer programming">MonomialIntegerPrograms</a> -- A package for fast monomial ideal computations using constraint integer programming</span>        </li>
+        <li>
+<span><a href="___Scip__Print__Level.html" title="adjust how much solving information is displayed in MonomialIntegerPrograms">ScipPrintLevel</a> -- adjust how much solving information is displayed in MonomialIntegerPrograms</span>        </li>
+      </ul>
+    </div>
+    <div class="waystouse">
+      <h2>Ways to use <tt>dimensionIP</tt> :</h2>
+      <ul>
+        <li>
+dimensionIP(MonomialIdeal)        </li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>
+

@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8" ?>  <!-- for emacs: -*- coding: utf-8 -*- -->
+<!-- Apache may like this line in the file .htaccess: AddCharset utf-8 .html -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN"	 "http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg.dtd" >
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+  <title>monomialIdealsWithHilbertFunction -- find all monomial ideals in a polynomial ring with a particular (partial or complete) Hilbert function</title>
+  <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+  <link type="text/css" rel="stylesheet" href="/usr/local/share/Macaulay2/Style/doc.css"/>
+</head>
+<body>
+  <table class="buttons">
+    <tr>
+      <td>
+        <div>
+<a href="___Scip__Print__Level.html">next</a> | <a href="_minimal__Primes__I__P.html">previous</a> | <a href="___Scip__Print__Level.html">forward</a> | <a href="_minimal__Primes__I__P.html">backward</a> | up | <a href="index.html">top</a> | <a href="master.html">index</a> | <a href="toc.html">toc</a> | <a href="http://www.math.uiuc.edu/Macaulay2/">Macaulay2 web site</a>        </div>
+      </td>
+    </tr>
+  </table>
+  <div>
+<a href="index.html" title="A package for fast monomial ideal computations using constraint integer programming">MonomialIntegerPrograms</a> :: <a href="_monomial__Ideals__With__Hilbert__Function.html" title="find all monomial ideals in a polynomial ring with a particular (partial or complete) Hilbert function">monomialIdealsWithHilbertFunction</a>  </div>
+  <hr/>
+  <div>
+    <h1>monomialIdealsWithHilbertFunction -- find all monomial ideals in a polynomial ring with a particular (partial or complete) Hilbert function</h1>
+    <div>
+      <h2>Synopsis</h2>
+      <ul>
+        <li>
+          <dl class="element">
+            <dt>Usage: </dt>
+            <dd><tt>monomialIdealsWithHilbertFunction(L, R)</tt></dd>
+            <dd><tt>monomialIdealsWithHilbertFunction(L, R, BoundGenerators => a)</tt></dd>
+            <dd><tt>monomialIdealsWithHilbertFunction(L, R, FirstBetti => b)</tt></dd>
+            <dd><tt>monomialIdealsWithHilbertFunction(L, R, GradedBettis => B)</tt></dd>
+            <dd><tt>monomialIdealsWithHilbertFunction(L, R, SquareFree => x)</tt></dd>
+          </dl>
+        </li>
+        <li>
+Inputs:          <ul>
+            <li>
+<span><tt>L</tt>, <span>a <a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/___List.html">list</a></span>, <i>{h(0), h(1), ..., h(d)}</i>, the values of a valid Hilbert function for <i>R</i> for degrees <i>0...d</i>.</span>            </li>
+            <li>
+<span><tt>R</tt>, <span>a <a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/___Polynomial__Ring.html">polynomial ring</a></span></span>            </li>
+          </ul>
+        </li>
+        <li>
+<a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/_using_spfunctions_spwith_spoptional_spinputs.html">Optional inputs</a>:          <ul>
+            <li>
+<span><tt>BoundGenerators => </tt><span><span>an <a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/___Z__Z.html">integer</a></span>, <span>default value -1</span>, a degree bound on the monomial generators</span></span>            </li>
+            <li>
+<span><tt>FirstBetti => </tt><span><span>an <a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/___Z__Z.html">integer</a></span>, <span>default value null</span>, a specified first total Betti number</span></span>            </li>
+            <li>
+<span><tt>GradedBettis => </tt><span><span>a <a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/___List.html">list</a></span>, <span>default value null</span>, if the form <i>{b<sub>0</sub>, b<sub>1</sub>, ..., b<sub>d</sub>}</i>, where <i>b<sub>i</sub></i> is the first graded Betti numbers with degree <i>i</i>.</span></span>            </li>
+            <li>
+<span><tt>SquareFree => </tt><span><span>a <a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/___Boolean.html">Boolean value</a></span>, <span>default value false</span>, whether or not to consider squarefree monomial ideals only</span></span>            </li>
+          </ul>
+        </li>
+        <li>
+Outputs:          <ul>
+            <li>
+<span><span>a <a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/___List.html">list</a></span>, all ideals <i>I</i> of <i>R</i> that satisfy <i>HF(R/I, i) = h(i)</i> for all <i>0&le;i&le;d</i></span>            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <div>
+      <h2>Description</h2>
+      <div>
+        <p>For example, count the monomial ideals in <i>&#x211A;[x,y,z]</i>, generated in degrees up to 5, whose Hilbert function begins with <i>{1, 3, 6, 5, 4, 4}</i>:</p>
+      </div>
+      <table class="examples">
+        <tr>
+          <td>
+            <pre>i1 : R = QQ[x,y,z]; L = {1, 3, 6, 5, 4, 4};
+
+i3 : M = monomialIdealsWithHilbertFunction(L, R);
+
+i4 : #M
+
+o4 = 306
+
+i5 : netList take(M, 5)
+
+     +-------------------------------------------------+
+     |                2      2   2      2     2        |
+o5 = |monomialIdeal (x y, x*y , x z, x*z , y*z )       |
+     +-------------------------------------------------+
+     |                2      2   2      2     2        |
+     |monomialIdeal (x y, x*y , y z, x*z , y*z )       |
+     +-------------------------------------------------+
+     |                2      2          3      2     2 |
+     |monomialIdeal (x y, x*y , x*y*z, y z, x*z , y*z )|
+     +-------------------------------------------------+
+     |                2      2            2     2   4  |
+     |monomialIdeal (x y, x*y , x*y*z, x*z , y*z , z ) |
+     +-------------------------------------------------+
+     |                2      2     2     2   3         |
+     |monomialIdeal (x y, x*y , x*z , y*z , z )        |
+     +-------------------------------------------------+</pre>
+          </td>
+        </tr>
+      </table>
+      <div>
+        <p>By default, the degrees of generators are bounded by the length of <i>L</i>. A lower bound can be set manually with the BoundGenerators option.</p>
+      </div>
+      <table class="examples">
+        <tr>
+          <td>
+            <pre>i6 : M2 = monomialIdealsWithHilbertFunction(L, R, BoundGenerators => 3);
+
+i7 : #M2
+
+o7 = 57
+
+i8 : netList take(M2, 5)
+
+     +----------------------------------------+
+     |                3     2   3          2  |
+o8 = |monomialIdeal (x , x*y , y , x*y*z, y z)|
+     +----------------------------------------+
+     |                3   2    3          2   |
+     |monomialIdeal (x , x y, y , x*y*z, y z) |
+     +----------------------------------------+
+     |                3     2   3   2         |
+     |monomialIdeal (x , x*y , y , x z, x*y*z)|
+     +----------------------------------------+
+     |                3   2    3   2          |
+     |monomialIdeal (x , x y, y , x z, x*y*z) |
+     +----------------------------------------+
+     |                3     2   3   2    2    |
+     |monomialIdeal (x , x*y , y , x z, y z)  |
+     +----------------------------------------+</pre>
+          </td>
+        </tr>
+      </table>
+      <div>
+        <p>There is also an option to enumerate squarefree monomial ideals only.</p>
+      </div>
+      <table class="examples">
+        <tr>
+          <td>
+            <pre>i9 : S = QQ[a..f]
+
+o9 = S
+
+o9 : PolynomialRing
+
+i10 : I = monomialIdealsWithHilbertFunction({1, 6, 19, 45, 86}, S, SquareFree => true);
+
+i11 : #I
+
+o11 = 900
+
+i12 : first random I
+
+o12 = monomialIdeal (a*d, c*d, a*b*c*e, a*b*e*f, a*c*e*f, b*c*e*f)
+
+o12 : MonomialIdeal of S</pre>
+          </td>
+        </tr>
+      </table>
+      <div>
+        <p>To specify the total number of minimal generators, use FirstBetti.</p>
+      </div>
+      <table class="examples">
+        <tr>
+          <td>
+            <pre>i13 : #monomialIdealsWithHilbertFunction({1, 3, 6, 5, 4, 4}, R, FirstBetti => 5)
+
+o13 = 57
+
+i14 : #monomialIdealsWithHilbertFunction({1, 3, 6, 5, 4, 4}, R, FirstBetti => 6)
+
+o14 = 174</pre>
+          </td>
+        </tr>
+      </table>
+      <div>
+        <p>Alternatively, specify the number of minimal generators in each degree using GradedBettis. The length of the list of graded (first) Betti numbers should match the length of the partial Hilbert function.</p>
+      </div>
+      <table class="examples">
+        <tr>
+          <td>
+            <pre>i15 : #monomialIdealsWithHilbertFunction({1, 3, 4, 2, 1}, R, GradedBettis => {0, 0, 2, 2, 1})
+
+o15 = 30</pre>
+          </td>
+        </tr>
+      </table>
+      <div>
+        <p>Notice that the GradedBettis option totally constrains the degrees of generators already, so do not use it with the BoundGenerators option.</p>
+      </div>
+      <table class="examples">
+        <tr>
+          <td>
+            <pre>i16 : #monomialIdealsWithHilbertFunction({1, 3, 4, 2, 1}, R, GradedBettis => {0, 0, 2, 3, 0})
+
+o16 = 39</pre>
+          </td>
+        </tr>
+      </table>
+      <div>
+        <p>You can combine BoundGenerators with FirstBetti, however, since FirstBetti does not constrain degrees.</p>
+      </div>
+      <table class="examples">
+        <tr>
+          <td>
+            <pre>i17 : #monomialIdealsWithHilbertFunction({1, 3, 6, 7, 6, 5, 4, 4, 4}, R, FirstBetti => 6, BoundGenerators => 5)
+
+o17 = 654
+
+i18 : #monomialIdealsWithHilbertFunction({1, 3, 6, 7, 6, 5, 4, 4, 4}, R, FirstBetti => 6, BoundGenerators => 6)
+
+o18 = 2337</pre>
+          </td>
+        </tr>
+      </table>
+      <div>
+        <p>The SquareFree option can be used with any of the other options.</p>
+      </div>
+      <table class="examples">
+        <tr>
+          <td>
+            <pre>i19 : #monomialIdealsWithHilbertFunction({1, 4, 7, 10, 13}, S, SquareFree => true, FirstBetti => 5)
+
+o19 = 240
+
+i20 : #monomialIdealsWithHilbertFunction({1, 4, 7, 10, 13}, S, SquareFree => true, FirstBetti => 6, BoundGenerators => 3)
+
+o20 = 60
+
+i21 : #monomialIdealsWithHilbertFunction({1, 4, 7, 10, 13}, S, SquareFree => true, GradedBettis => {0, 2, 3, 1, 0})
+
+o21 = 60</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h2>See also</h2>
+      <ul>
+        <li>
+<span><a href="_betti__Tables__With__Hilbert__Function.html" title="list or tally all Betti tables that can be obtained from monomial ideals with a particular (partial or complete) Hilbert function">bettiTablesWithHilbertFunction</a> -- list or tally all Betti tables that can be obtained from monomial ideals with a particular (partial or complete) Hilbert function</span>        </li>
+        <li>
+<span><a href="/usr/local/share/doc/Macaulay2/LexIdeals/html/_hilbert__Funct.html" title="return the Hilbert function of a polynomial ring mod a homogeneous ideal as a list">hilbertFunct</a> -- return the Hilbert function of a polynomial ring mod a homogeneous ideal as a list</span>        </li>
+        <li>
+<span><a href="/usr/local/share/doc/Macaulay2/LexIdeals/html/_is__H__F.html" title="is a finite list a Hilbert function of a polynomial ring mod a homogeneous ideal">isHF</a> -- is a finite list a Hilbert function of a polynomial ring mod a homogeneous ideal</span>        </li>
+        <li>
+<span><a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/_is__Square__Free.html" title="whether something is square free monomial ideal">isSquareFree</a> -- whether something is square free monomial ideal</span>        </li>
+        <li>
+<span><a href="/usr/local/share/doc/Macaulay2/LexIdeals/html/index.html" title="a package for working with lex ideals">LexIdeals</a> -- a package for working with lex ideals</span>        </li>
+      </ul>
+    </div>
+    <div class="waystouse">
+      <h2>Ways to use <tt>monomialIdealsWithHilbertFunction</tt> :</h2>
+      <ul>
+        <li>
+monomialIdealsWithHilbertFunction(List,PolynomialRing)        </li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>
+

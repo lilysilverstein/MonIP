@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8" ?>  <!-- for emacs: -*- coding: utf-8 -*- -->
+<!-- Apache may like this line in the file .htaccess: AddCharset utf-8 .html -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN"	 "http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg.dtd" >
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+  <title>minimalPrimesIP -- one line description if different from minimalPrimesIP</title>
+  <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+  <link type="text/css" rel="stylesheet" href="/usr/local/share/Macaulay2/Style/doc.css"/>
+</head>
+<body>
+  <table class="buttons">
+    <tr>
+      <td>
+        <div>
+<a href="_monomial__Ideals__With__Hilbert__Function.html">next</a> | <a href="_load__S__C__I__P__Codim__And__Degree.html">previous</a> | <a href="_monomial__Ideals__With__Hilbert__Function.html">forward</a> | <a href="_load__S__C__I__P__Codim__And__Degree.html">backward</a> | up | <a href="index.html">top</a> | <a href="master.html">index</a> | <a href="toc.html">toc</a> | <a href="http://www.math.uiuc.edu/Macaulay2/">Macaulay2 web site</a>        </div>
+      </td>
+    </tr>
+  </table>
+  <div>
+<a href="index.html" title="A package for fast monomial ideal computations using constraint integer programming">MonomialIntegerPrograms</a> :: <a href="_minimal__Primes__I__P.html" title="one line description if different from minimalPrimesIP">minimalPrimesIP</a>  </div>
+  <hr/>
+  <div>
+    <h1>minimalPrimesIP -- one line description if different from minimalPrimesIP</h1>
+    <div>
+      <h2>Synopsis</h2>
+      <ul>
+        <li>
+          <dl class="element">
+            <dt>Usage: </dt>
+            <dd><tt>minimalPrimesIP I</tt></dd>
+            <dd><tt>minimalPrimesIP (I, iterations)</tt></dd>
+          </dl>
+        </li>
+        <li>
+Inputs:          <ul>
+            <li>
+<span><tt>I</tt>, <span>a <a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/___Monomial__Ideal.html">monomial ideal</a></span></span>            </li>
+            <li>
+<span><tt>iterations</tt>, <span>an <a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/___Z__Z.html">integer</a></span>, how many iterations of topMinimalPrimesIP should be called</span>            </li>
+          </ul>
+        </li>
+        <li>
+Outputs:          <ul>
+            <li>
+<span><span>a <a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/___List.html">list</a></span>, the minimal primes of I</span>            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <div>
+      <h2>Description</h2>
+      <div>
+        <p>This is basically an alternative version of <a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/_minimal__Primes.html" title="minimal associated primes of an ideal">minimalPrimes</a>.</p>
+        <p>This function calls <a href="_top__Minimal__Primes__I__P.html" title="compute the minimal primes of maximum dimension using integer programming">topMinimalPrimesIP</a> repeatedly, collecting the primes and passing them in with <a href="___Ignore__Primes.html" title="Ignores certain primes when computing top minimal primes.">IgnorePrimes</a>. This is repeated <tt>iterations</tt> many times or until there are no primes remaining. If <tt>iterations</tt> is excluded, all minimal primes are returned.</p>
+      </div>
+      <table class="examples">
+        <tr>
+          <td>
+            <pre>i1 : R = QQ[x,y,z,w,v];</pre>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <pre>i2 : I = monomialIdeal(y^12, x*y^3, z*w^3, z*v*y^10, z*x^10, v*z^10, w*v^10, y*v*x*z*w);
+
+o2 : MonomialIdeal of R</pre>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <pre>i3 : ScipPrintLevel = 0;</pre>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <pre>i4 : minimalPrimesIP(I, 1)
+
+o4 = {monomialIdeal (y, z, v), monomialIdeal (y, z, w)}
+
+o4 : List</pre>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <pre>i5 : minimalPrimesIP I
+
+o5 = {monomialIdeal (y, z, v), monomialIdeal (y, z, w), monomialIdeal (x, y,
+     ------------------------------------------------------------------------
+     w, v)}
+
+o5 : List</pre>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <pre>i6 : minimalPrimes I
+
+o6 = {monomialIdeal (y, z, w), monomialIdeal (y, z, v), monomialIdeal (x, y,
+     ------------------------------------------------------------------------
+     w, v)}
+
+o6 : List</pre>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <h2>Caveat</h2>
+      <div>
+        <p>Warning: more than likely, this with take longer than <a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/_minimal__Primes.html" title="minimal associated primes of an ideal">minimalPrimes</a> to return the same output. It some situations <a href="_top__Minimal__Primes__I__P.html" title="compute the minimal primes of maximum dimension using integer programming">topMinimalPrimesIP</a> is much faster than <a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/_minimal__Primes.html" title="minimal associated primes of an ideal">minimalPrimes</a>, but not all.</p>
+      </div>
+    </div>
+    <div>
+      <h2>See also</h2>
+      <ul>
+        <li>
+<span><a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/_minimal__Primes.html" title="minimal associated primes of an ideal">minimalPrimes</a> -- minimal associated primes of an ideal</span>        </li>
+        <li>
+<span><a href="_top__Minimal__Primes__I__P.html" title="compute the minimal primes of maximum dimension using integer programming">topMinimalPrimesIP</a> -- compute the minimal primes of maximum dimension using integer programming</span>        </li>
+        <li>
+<span><a href="___Ignore__Primes.html" title="Ignores certain primes when computing top minimal primes.">IgnorePrimes</a> -- Ignores certain primes when computing top minimal primes.</span>        </li>
+      </ul>
+    </div>
+    <div class="waystouse">
+      <h2>Ways to use <tt>minimalPrimesIP</tt> :</h2>
+      <ul>
+        <li>
+minimalPrimesIP(MonomialIdeal)        </li>
+        <li>
+minimalPrimesIP(MonomialIdeal,ZZ)        </li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>
+

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8" ?>  <!-- for emacs: -*- coding: utf-8 -*- -->
+<!-- Apache may like this line in the file .htaccess: AddCharset utf-8 .html -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN"	 "http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg.dtd" >
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+  <title>degreeIP -- compute the degree of a monomial ideal using integer programming</title>
+  <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+  <link type="text/css" rel="stylesheet" href="/usr/local/share/Macaulay2/Style/doc.css"/>
+</head>
+<body>
+  <table class="buttons">
+    <tr>
+      <td>
+        <div>
+<a href="_dimension__I__P.html">next</a> | <a href="___Count.html">previous</a> | <a href="_dimension__I__P.html">forward</a> | <a href="___Count.html">backward</a> | up | <a href="index.html">top</a> | <a href="master.html">index</a> | <a href="toc.html">toc</a> | <a href="http://www.math.uiuc.edu/Macaulay2/">Macaulay2 web site</a>        </div>
+      </td>
+    </tr>
+  </table>
+  <div>
+<a href="index.html" title="A package for fast monomial ideal computations using constraint integer programming">MonomialIntegerPrograms</a> :: <a href="_degree__I__P.html" title="compute the degree of a monomial ideal using integer programming">degreeIP</a>  </div>
+  <hr/>
+  <div>
+    <h1>degreeIP -- compute the degree of a monomial ideal using integer programming</h1>
+    <div>
+      <h2>Synopsis</h2>
+      <ul>
+        <li>
+          <dl class="element">
+            <dt>Usage: </dt>
+            <dd><tt>d = degreeIP(I)</tt></dd>
+            <dd><tt>d = degreeIP(I, KnownDim => k)</tt></dd>
+          </dl>
+        </li>
+        <li>
+Inputs:          <ul>
+            <li>
+<span><tt>I</tt>, <span>a <a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/___Monomial__Ideal.html">monomial ideal</a></span></span>            </li>
+          </ul>
+        </li>
+        <li>
+<a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/_using_spfunctions_spwith_spoptional_spinputs.html">Optional inputs</a>:          <ul>
+            <li>
+<span><tt>KnownDim => </tt><span><span>an <a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/___Z__Z.html">integer</a></span>, <span>default value -1</span>, the dimension, <tt>k</tt>, of the ideal</span></span>            </li>
+          </ul>
+        </li>
+        <li>
+Outputs:          <ul>
+            <li>
+<span><tt>d</tt>, <span>an <a href="/usr/local/share/doc/Macaulay2/Macaulay2Doc/html/___Z__Z.html">integer</a></span>, the degree of <tt>I</tt>. That is, if <tt>k</tt> is the maximum dimension of a coordinate subspace in the variety of <tt>I</tt>, then <tt>degree(I)</tt> is the number of <tt>k</tt>-dimensional subspaces in the variety.</span>            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <div>
+      <h2>Description</h2>
+      <div>
+        <p>If a <tt>KnownDim</tt> is not provided, <tt>degreeIP</tt> will first call <a href="_dimension__I__P.html" title="compute the dimension of a monomial ideal using integer programming">dimensionIP</a> to compute the dimension. Additionally, before doing any computation, the cache of <tt>cokernel generators I</tt> is checked to see if the degree has been previously computed.</p>
+        <p>An integer programming formulation of the degree problem is written to a temporary file directory, then the SCIP Optimization Suite is used to solve the IP. Solving details are written to a second file in the temporary directory, before outputting the answer.</p>
+      </div>
+      <table class="examples">
+        <tr>
+          <td>
+            <pre>i1 : R = QQ[x,y,z,w,v];</pre>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <pre>i2 : I = monomialIdeal(x*y*w, x*z*v, y*x, y*z*v);
+
+o2 : MonomialIdeal of R</pre>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <pre>i3 : degreeIP(I, KnownDim => 3)
+
+o3 = 5</pre>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <pre>i4 : degreeIP(I)
+
+o4 = 5</pre>
+          </td>
+        </tr>
+      </table>
+      <div>
+        <p>The location of the temporary directory is printed to the screen.</p>
+        <p>For more information about the SCIP warning messages, and related info on how SCIP counts solutions, see the very end of the <a href="___Scip__Print__Level.html" title="adjust how much solving information is displayed in MonomialIntegerPrograms">ScipPrintLevel</a> info page.</p>
+      </div>
+    </div>
+    <div>
+      <h2>Caveat</h2>
+      <div>
+        <p><tt>degreeIP</tt> does not verify that a provided <tt>KnownDim</tt> is correct. Providing the wrong dimension will result in an incorrect degree count (and possibly an infeasible program).</p>
+      </div>
+    </div>
+    <div>
+      <h2>See also</h2>
+      <ul>
+        <li>
+<span><tt>degree(Ideal)</tt> (missing documentation<!-- tag: (degree,Ideal) -->)</span>        </li>
+        <li>
+<span><a href="_dimension__I__P.html" title="compute the dimension of a monomial ideal using integer programming">dimensionIP</a> -- compute the dimension of a monomial ideal using integer programming</span>        </li>
+        <li>
+<span><a href="index.html" title="A package for fast monomial ideal computations using constraint integer programming">MonomialIntegerPrograms</a> -- A package for fast monomial ideal computations using constraint integer programming</span>        </li>
+        <li>
+<span><a href="___Scip__Print__Level.html" title="adjust how much solving information is displayed in MonomialIntegerPrograms">ScipPrintLevel</a> -- adjust how much solving information is displayed in MonomialIntegerPrograms</span>        </li>
+      </ul>
+    </div>
+    <div class="waystouse">
+      <h2>Ways to use <tt>degreeIP</tt> :</h2>
+      <ul>
+        <li>
+degreeIP(MonomialIdeal)        </li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>
+
