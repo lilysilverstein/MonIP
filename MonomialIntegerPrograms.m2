@@ -555,31 +555,23 @@ doc ///
      
    {\bf Behavior of package on load.}
    
-   The value of @TO symbol ScipPrintLevel@ determines the verbosity.
-   It is set to @TT"0"@ when the package is loaded. To change this default behavior, 
-   load package with the @TT"CustomScipPrintLevel"@ option (example below).
+   The value of @TO symbol ScipPrintLevel@ determines the verbositey.
+   It is set to @TT"1"@ when the package is loaded.
    
-   By default, the package calls SCIP using the executable name @TT"scip"@. To use a
-   different alias or custom path to your executable file for SCIP, load the package 
-   with the @TT"CustomPath"@ option (example below).
-  CannedExample
-   loadPackage("MonomialIntegerPrograms", Configuration => {"CustomScipPrintLevel" => "1", "CustomPath" => "foo"});
-  Text
-   Loading this package also overwrites the @TT"Macaulay2"@ functions @TO codim@ and @TO degree@, 
-   for inputs of type @TO MonomialIdeal@, to use the (typically far faster) methods from this package. 
-   Specifically, @TO loadSCIPCodimAndDegree@ is run when the package is loaded. The user may run
-   @TO loadBuiltinCodimAndDegree@ at any time to restore the original usage.
+   The functions @TO codim@, and @TO degree@ are overwritten for inputs with
+   type @TO MonomialIdeal@. Specifically, @TO loadSCIPCodimAndDegree@ is run
+   when the package is loaded.
  Caveat
-  These methods are designed and tested for ideals of polynomial rings with fields 
-  (finite characteristic or characteristic zero) as the coefficient rings.
-  For other rings, the behavior of these methods is unspecified.
+  These methods are designed and tested for ideals and polynomial rings with a
+  field as the coefficients ring. For other rings, the behavior of these methods
+  is unspecified.
  SeeAlso
   codimensionIP
   degreeIP
   dimensionIP
   monomialIdealsWithHilbertFunction
-  bettiTablesWithHilbertFunction
   topMinimalPrimesIP
+  symbol ScipPrintLevel
 ///
 
 doc ///
@@ -616,10 +608,10 @@ doc ///
    {\bf 5} all the above, plus print any other information sent by 
    SCIP to stdout during the solve, if any
 
-   The default value of ScipPrintLevel is 0. To load the package with a different
+   The default value of ScipPrintLevel is 1. To load the package with a different
    default value for ScipPrintLevel, imitate the following example.
   CannedExample
-   i1: loadPackage("MonomialIntegerPrograms", Configuration => {"CustomScipPrintLevel" => "1"});
+   i1: loadPackage("MonomialIntegerPrograms", Configuration => {"CustomScipPrintLevel" => "0"});
    --loading configuration for package "MonomialIntegerPrograms" from file <foo>
    Using default executable name "scip".
    To change this, load package using CustomPath option.
@@ -632,7 +624,7 @@ doc ///
 
    o2 = 0
   Text
-   Replace "1" above  with any custom choice. Note that the string "1" is used, not an integer.
+   Replace "0" above  with any custom choice. Note that the string "0" is used, not an integer.
    
    
    {\bf Why am I getting warnings/why does the solver report infeasibility for
@@ -1352,7 +1344,7 @@ doc ///
   KnownDim => ZZ
    the dimension, @TT"k"@, of the ideal
   IgnorePrimes => List
-    a list of primes to not include in the result. See @TO IgnorePrimes@.
+    a list of primes to not include the the result. See @TO IgnorePrimes@.
  Outputs
   L:List
    all minimal associated primes of dimension $k$
@@ -1409,8 +1401,7 @@ doc ///
    L2 = topMinimalPrimesIP(I, IgnorePrimes=>L1)
    minimalPrimes I
  Caveat
-  Though this provides a method for finding minimal primes of a particular dimension, or range of dimensions
-  by repeated application, it may not be faster than simply using @TO minimalPrimes@ and counting generators.
+  This may not be faster than simply using @TO minimalPrimes@ and counting generators.
 ///
 
 doc ///
@@ -1422,10 +1413,8 @@ doc ///
   loadBuiltinCodimAndDegree()
  Description
   Text
-   When the package is loaded, @TO codim@ and @TO degree@ are replaced with
+   When the package gets loaded, codim and degree are replaced with
    @TT"codimensionIP"@ and @TT"degreeIP"@ respectively for a @TT"MonomialIdeal"@.
-   Any other functions that rely on codim, such as @TO dim@, are affected accordingly.
-
    @TT"loadBuiltinCodimAndDegree"@ reloads the built-in methods.
   Example
    R = QQ[a,b,c];
@@ -1439,40 +1428,33 @@ doc ///
   loadSCIPCodimAndDegree
   codimensionIP
   degreeIP
-  (codim,Ideal)
-  (degree,Ideal)
-  (dim, Ideal)
 ///
 doc ///
  Key
   loadSCIPCodimAndDegree
  Headline
-  change codim and degree to use the IP methods from this package
+  change codim and degree to use the default, built-in methods.
  Usage
   loadBuiltinCodimAndDegree()
  Description
   Text
-   When the package is loaded, @TO codim@ and @TO degree@ are replaced with
+   When the package gets loaded, codim and degree are replaced with
    @TT"codimensionIP"@ and @TT"degreeIP"@ respectively for a @TT"MonomialIdeal"@.
-   Any other functions that rely on codim, such as @TO dim@, are affected accordingly.
-
    @TT"loadSCIPCodimAndDegree"@ can be used to reload the the SCIP methods in the
    event that @TO loadBuiltinCodimAndDegree@ was called.
   Example
    R = QQ[a,b,c];
    ScipPrintLevel = 1;
+   loadBuiltinCodimAndDegree();
    codim(monomialIdeal(a^2, b*a, c*b))
    degree(monomialIdeal(a^2, b*a, c*b))
-   loadBuiltinCodimAndDegree();
+   loadSCIPCodimAndDegree();
    codim(monomialIdeal(a^2, b*a, c*b))
    degree(monomialIdeal(a^2, b*a, c*b))
  SeeAlso
   loadBuiltinCodimAndDegree
   codimensionIP
   degreeIP
-  (codim, Ideal)
-  (degree, Ideal)
-  (dim, Ideal)
 ///
 
 doc ///
@@ -1672,7 +1654,7 @@ end--
 restart
 uninstallPackage("MonomialIntegerPrograms")
 installPackage("MonomialIntegerPrograms", RerunExamples => true)
-loadPackage("MonomialIntegerPrograms", Configuration => {"CustomPath" => "scip"}, Reload => true)
+loadPackage("MonomialIntegerPrograms")
 help("ScipPrintLevel")
 needsPackage("MonomialIntegerPrograms")
 check("MonomialIntegerPrograms")
