@@ -1,3 +1,20 @@
+-- -*- coding: utf-8 -*-
+-- Copyright (C) 2020 Lily Silverstein and Jay White
+--
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
 newPackage (
   "MonomialIntegerPrograms",
   Version=>"1.0",
@@ -260,7 +277,6 @@ degreeIPFormulation (List, ZZ, ZZ) := (A, n, knownDim) -> (
 degreeIPFormulation (MonomialIdeal, ZZ) := (I, knownDim) -> (
     degreeIPFormulation(monIdealToSupportSets(I), #gens ring I, knownDim)
     )
-
 codimensionIPFormulation = method();
 codimensionIPFormulation (List, ZZ) := (A, n) -> (
     concatenate({"set N := {0 .. ",toString(n-1),"};\n",
@@ -274,7 +290,6 @@ codimensionIPFormulation (List, ZZ) := (A, n) -> (
 codimensionIPFormulation (MonomialIdeal) := (I) -> (
     codimensionIPFormulation(monIdealToSupportSets I, #gens ring I)
     )
-
 hilbertIPFormulation = method(
     Options => {
 	BoundGenerators => -1,
@@ -345,12 +360,10 @@ hilbertIPFormulation (List, ZZ) := o -> (D, n) -> (
 	    bettiLines
 	    })
     )
-
 monIdealToSupportSets = method()
 monIdealToSupportSets (MonomialIdeal) := (I) -> (
     apply(first entries mingens I, m -> apply(support m, r -> index r))
     )
-
 printStatement = method();
 printStatement (List) := L -> (
     (zimplFile, solFile, errorFile, nickname, dir) := toSequence L;
@@ -359,7 +372,6 @@ printStatement (List) := L -> (
     if ScipPrintLevel >= 3 then try print(get zimplFile) else print("ZIMPL file not found! This might be an error or bug.");
     if ScipPrintLevel >= 4 then try print(get solFile) else print("SCIP solution file not found! This is probably due to an infeasible IP.");
 )
-
 readAllMonomialIdeals = method()
 readAllMonomialIdeals (String, PolynomialRing) := (solFile, R) -> (
     n := numgens R;
@@ -373,7 +385,6 @@ readAllMonomialIdeals (String, PolynomialRing) := (solFile, R) -> (
 	)
     else(if ScipPrintLevel >= 1 then print("Infeasible IP; no solutions"); {} )
     )
-
 readAllPrimes = method()
 readAllPrimes (String, PolynomialRing) := (solFile, R) -> (
   n := numgens R;
@@ -386,29 +397,23 @@ readAllPrimes (String, PolynomialRing) := (solFile, R) -> (
     monomialIdeal for i from 1 to #l-1 list if l#i===1 then mons#(i-1) else continue
   ))
 )
-
 readScipSolution = method();
 readScipSolution (String) := solFile -> (
     solContents := get solFile;
     allSolutions := select(///objective value.[[:space:]]+([[:digit:]]+)///, ///\1///, solContents);
     if #allSolutions == 0 then null else value first allSolutions
 )
-
 readScipCount = method();
 readScipCount (String) := solFile -> (
     solContents := get solFile;
     value first select(///Feasible Solutions[[:space:]]+:[[:space:]]+([[:digit:]]+)///, ///\1///, solContents)
 )
-
 tempDirectoryAndFiles = method()
 tempDirectoryAndFiles (String) := (bname) -> (
     dir := temporaryFileName();
     makeDirectory(dir);
     (dir, dir|"/"|bname|".zpl", dir|"/"|bname|".sol", dir|"/"|bname|".errors", dir|"/"|bname|".details")
 )
-
-
-
 
 -----------------------------------------------------
 -- internal methods related to IgnorePrimes option --
@@ -465,14 +470,9 @@ dimensionIPWithConstraints (MonomialIdeal, String) := (I, constraints) -> (
     if cdim === null then null else (n - cdim)
 )
 
-
-
-
 ---------------------
 -- un-polarization --
 ---------------------
-
-
 
 unPolarize = method();
 unPolarize (MonomialIdeal, PolynomialRing) := (I, R) -> (
@@ -1573,7 +1573,7 @@ assert(#monomialIdealsWithHilbertFunction({1,4,3,1,0}, R) == 244)
 assert(all(monomialIdealsWithHilbertFunction({1,4,10,19,31}, R), I -> numgens I == 1))
 ///
 
-TEST /// -- squarefree and bound generators
+TEST /// -- squarefree and bound generators options
 R = QQ[x,y,z,w];
 M = monomialIdealsWithHilbertFunction({1,4,5,6,7}, R, BoundGenerators => 2);
 SF = monomialIdealsWithHilbertFunction({1,4,5,6,7}, R, BoundGenerators => 2, SquareFree => true);
@@ -1651,13 +1651,4 @@ assert(bettiTablesWithHilbertFunction({1, 3, 7}, R) == {})
 
 end--
 
-restart
-uninstallPackage("MonomialIntegerPrograms")
-installPackage("MonomialIntegerPrograms", RerunExamples => true)
-loadPackage("MonomialIntegerPrograms")
-help("ScipPrintLevel")
-needsPackage("MonomialIntegerPrograms")
-check("MonomialIntegerPrograms")
-viewHelp bettiTablesWithHilbertFunction
 
-ScipPrintLevel = 4
